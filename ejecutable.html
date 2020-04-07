@@ -1,0 +1,54 @@
+<html>
+    <head>        
+        <link rel="stylesheet" type="text/css" href="estilos.css">
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="AnalizadorLexico.js"></script>
+        <!-- <script type="text/javascript">
+        test();
+        Prueba();
+        </script> -->
+        <script>
+            document.getElementById("FileLoader").style.display="none";
+            function LoadFile(){
+                document.getElementById("FileLoader").style.display="block";
+            }
+            function Salir(){
+                self.close();
+            }
+        </script>
+    </head>
+    
+    <body >
+        <div id="header">
+            <div class="dropdown">
+                <button class="dropbtn"><img src="imgs/file.png" width="30%"></button>
+                <div class="dropdown-content">
+                  <a href="#">Nuevo Archivo</a>
+                  <a href="#" class="FileLoader">Abrir Archivo</a>
+                  <a href="#">Guardar</a>
+                  <a href="#">Guardar Como</a>
+                  <a href="#" onclick="Salir()">Salir</a>
+                </div>
+              </div>
+        </div>
+        <div class="FileButton">
+            <input type="file" id="FileLoader" name="files[]">
+        </div>     
+        <div id="left">
+        <button onclick="EnviarEntrada(entrada.value, consola1, consola2);">Analizar Entrada</button>
+         <textarea id="entrada"></textarea>
+        </div>
+    </div>
+        <div id="right">
+            <textarea id="consola1" disabled></textarea>
+       
+            <textarea id="consola2" disabled></textarea>
+        </div>
+        <div id="leftdown">
+            <table algin=center border="1" style="margin-left: 10%;" width=80%>
+                <tr><td>Nombre</td><td>Tipo</td><td>Línea</td></tr>
+            </table>
+        </div>
+        
+    </body>
+</html>

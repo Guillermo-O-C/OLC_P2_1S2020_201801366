@@ -1,0 +1,105 @@
+#left{
+    width:40%;
+    height: 60%;
+    background-color:#b80d57;
+    float: left;
+    margin-left: 10%;
+}
+#leftdown{
+    width:40%;
+    height: 30%;
+    background-color:#b80d57;
+    float: left;
+    margin-left: 10%;
+}
+#right{
+    width: 40%;
+    height: 90%;
+    background-color:#f8615a;
+    float: right;
+    margin-right: 10%;
+}
+#entrada{
+    width: 80%;
+    height: 80%;
+    margin: 10%;
+}
+#consola1{
+
+    width: 80%;
+    height: 40%;
+    margin: 10%;
+}
+#consola2{
+
+    width: 80%;
+    height: 40%;
+    margin: 10%;
+    margin-top: 0%;
+}
+textarea{
+    background-color: black;
+    font-family: consolas;
+    color: aqua;
+    resize: none;
+}
+body{
+    background-color: #721b65;
+}
+header{
+    height: 10%;
+    width: 80%;
+    background-color: #ffd868;
+    margin-top: 0%;
+    margin-left: 10%;
+}
+table{
+    background-color: #ffd868;
+    font-family: consolas;
+}
+.dropbtn {
+    background-color: #c0a247;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .FileButton{
+      
+    display: none;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+     .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+     }
+  
+     .dropdown-content a:hover {
+      background-color: #ddd;
+
+    }
+    .FileLoader:hover .FileButton{
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+  
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  .dropdown:hover .dropbtn {background-color: #ffd868;}
