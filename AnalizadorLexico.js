@@ -7,7 +7,10 @@ var columna;
 var columnaToken;
 var auxlex;
 var caracter;
-var isDecimal;
+var isDecimal;/*
+var globalVariable={
+    Salida
+};*/
 function test(){    
     alert('Hello World! - guapo');
 }
@@ -20,7 +23,8 @@ function EnviarEntrada(text, textarea, textarea2){
     if(Errores.length>0){        
         textarea.value = PrintErrores();
     }else{
-        textarea.value = PrintTokens();
+      //  textarea.value = PrintTokens();
+        SetUp(Salida, textarea);
     }
 }
 function PrintTokens(){
@@ -99,43 +103,43 @@ function AnalizadorLexico(entrada){
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_ABRIR_LLAVES");
+                    agregarToken("ABRIR LLAVES");
                 }
                 else if (c.localeCompare('}') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_CERRAR_LLAVES");
+                    agregarToken("CERRAR LLAVES");
                 }
                 else if (c.localeCompare('(') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_ABRIR_PARENTESIS");
+                    agregarToken("ABRIR PARENTESIS");
                 }
                 else if (c.localeCompare(')') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_CERRAR_PARENTESIS");
+                    agregarToken("CERRAR PARENTESIS");
                 }
                 else if (c.localeCompare(',') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_COMA");
+                    agregarToken("COMA");
                 }
                 else if (c.localeCompare(';') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_PUNTO_COMA");
+                    agregarToken("PUNTO COMA");
                 }
                 else if (c.localeCompare(':') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_DOS_PUNTOS");
+                    agregarToken("DOS PUNTOS");
                 }
                 else if (c.localeCompare('=') == 0)
                 {
@@ -147,19 +151,19 @@ function AnalizadorLexico(entrada){
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_ABRE_CORCHETE");
+                    agregarToken("ABRE CORCHETE");
                 }
                 else if (c.localeCompare(']') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_CERRAR_CORCHETE");
+                    agregarToken("CERRAR CORCHETE");
                 }
                 else if (c.localeCompare('.') == 0)
                 {
                     auxlex += c;
                     columnaToken = columna;
-                    agregarToken("S_PUNTO");
+                    agregarToken("PUNTO");
                 }
                 else if (c.localeCompare('/') == 0)
                 {
@@ -263,7 +267,7 @@ function AnalizadorLexico(entrada){
                 {
                     if (isDecimal == true)
                     {
-                        agregarToken("NUMERO_DECIMAL");
+                        agregarToken("NUMERO DECIMAL");
                         isDecimal = false;
                         i -= 1;
                     }
@@ -305,103 +309,103 @@ function AnalizadorLexico(entrada){
             case 4:
                 if(c.localeCompare('=') == 0){
                     auxlex += c;
-                    agregarToken("S_IGUAL_IGUAL");
+                    agregarToken("IGUAL IGUAL");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_IGUAL");
+                    agregarToken("IGUAL");
                 }
                 break;
             case 5:
                 if (c.localeCompare('/') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_DOBLE_DIAGONAL");
+                    agregarToken("DOBLE DIAGONAL");
                     estado = 12;
                 }
                 else if (c.localeCompare('*') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_DIAGONAL_ASTERISCO");
+                    agregarToken("DIAGONAL ASTERISCO");
                     estado = 13;
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_DIAGONAL");
+                    agregarToken("DIAGONAL");
                 }
                 break;
             case 6:
                 if (c.localeCompare('/') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_ASTERISCO_DIAGONAL");
+                    agregarToken("ASTERISCO DIAGONAL");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_ASTERISCO");
+                    agregarToken("ASTERISCO");
                 }
                 break;
             case 7:
                 if (c.localeCompare('=') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_MENOR_IGUAL");
+                    agregarToken("MENOR IGUAL");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_MENOR");
+                    agregarToken("MENOR");
                 }
                 break;
             case 8:
                 if (c.localeCompare('=') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_MAYOR_IGUAL");
+                    agregarToken("MAYOR IGUAL");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_MAYOR");
+                    agregarToken("MAYOR");
                 }
                 break;
             case 9:
                 if (c.localeCompare('=') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_DISTINTO");
+                    agregarToken("DISTINTO");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_NOT");
+                    agregarToken("NOT");
                 }
                 break;    
             case 10:
                 if (c.localeCompare('+') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_MAS_MAS");
+                    agregarToken("MAS MAS");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_MAS");
+                    agregarToken("MAS");
                 }
                 break;
             case 11:
                 if (c.localeCompare('-') == 0)
                 {
                     auxlex += c;
-                    agregarToken("S_MENOS_MENOS");
+                    agregarToken("MENOS MENOS");
                 }
                 else
                 {
                     i -= 1;
-                    agregarToken("S_MENOS");
+                    agregarToken("MENOS");
                 }
                 break;
             case 12:
@@ -439,7 +443,7 @@ function AnalizadorLexico(entrada){
                 else if (c.localeCompare('\'')==0)
                 {
                     auxlex += c;
-                    agregarToken("Caracter");
+                    agregarToken("CARACTER");
                 }
                 else
                 {
@@ -462,7 +466,7 @@ function AnalizadorLexico(entrada){
             case 16:
                 if(c.localeCompare('|')==0){  
                     auxlex+=c;                  
-                    agregarToken("S_OR");
+                    agregarToken("OR");
                 }else{      
                     console.log("Error Léxico con " + c);
                     agregarError(fila, columna, auxlex, "Desconocido");
@@ -473,7 +477,7 @@ function AnalizadorLexico(entrada){
             case 17:
                 if(c.localeCompare('&')==0){  
                     auxlex+=c;                  
-                    agregarToken("S_AND");
+                    agregarToken("AND");
                 }else{      
                     console.log("Error Léxico con " + c);
                     agregarError(fila, columna, auxlex, "Desconocido");
@@ -520,82 +524,82 @@ function VerificarResevada()
             switch (auxlex)
             {
                 case "class":
-                    agregarToken("PR_CLASS");
+                    agregarToken("PR CLASS");
                     break;
                 case "static":
-                    agregarToken("PR_STATIC");
+                    agregarToken("PR STATIC");
                     break;
                 case "void":
-                    agregarToken("PR_VOID");
+                    agregarToken("PR VOID");
                     break;
                 case "Main":
-                    agregarToken("PR_MAIN");
+                    agregarToken("PR MAIN");
                     break;
                 case "int":
-                    agregarToken("PR_INT");
+                    agregarToken("PR INT");
                     break;
                 case "float":
-                    agregarToken("PR_FLOAT");
+                    agregarToken("PR FLOAT");
                     break;
                 case "string":
-                    agregarToken("PR_STRING");
+                    agregarToken("PR STRING");
                     break;
                 case "bool":
-                    agregarToken("PR_BOOL");
+                    agregarToken("PR BOOL");
                     break;
                 case "char":
-                    agregarToken("PR_CHAR");
+                    agregarToken("PR CHAR");
                     break;
                 case "new":
-                    agregarToken("PR_NEW");
+                    agregarToken("PR NEW");
                     break;
                 case "Console":
-                    agregarToken("PR_CONSOLE");
+                    agregarToken("PR CONSOLE");
                     break;
                 case "if":
-                    agregarToken("PR_IF");
+                    agregarToken("PR IF");
                     break;
                 case "else":
-                    agregarToken("PR_ELSE");
+                    agregarToken("PR ELSE");
                     break;
                 case "switch":
-                    agregarToken("PR_SWITCH");
+                    agregarToken("PR SWITCH");
                     break;
                 case "case":
-                    agregarToken("PR_CASE");
+                    agregarToken("PR CASE");
                     break;
                 case "break":
-                    agregarToken("PR_BREAK");
+                    agregarToken("PR BREAK");
                     break;
                 case "default":
-                    agregarToken("PR_DEFAULT");
+                    agregarToken("PR DEFAULT");
                     break;
                 case "true":
-                    agregarToken("PR_TRUE");
+                    agregarToken("PR TRUE");
                     break;
                 case "false":
-                    agregarToken("PR_FALSE");
+                    agregarToken("PR FALSE");
                     break;
                 case "for":
-                    agregarToken("PR_FOR");
+                    agregarToken("PR FOR");
                     break;
                 case "while":
-                    agregarToken("PR_WHILE");
+                    agregarToken("PR WHILE");
                     break;
                 case "WriteLine":
-                    agregarToken("PR_WRITELINE");
+                    agregarToken("PR WRITELINE");
                     break;
                 case "Write":
-                    agregarToken("PR_WRITE");
+                    agregarToken("PR WRITE");
                     break;
                 case "do":
-                    agregarToken("PR_DO");
+                    agregarToken("PR DO");
                     break;
                 case "return":
-                    agregarToken("PR_RETURN");
+                    agregarToken("PR RETURN");
                     break;
                 case "continue":
-                    agregarToken("PR_CONTINUE");
+                    agregarToken("PR CONTINUE");
                     break;
                 default:
                     agregarToken("ID");
