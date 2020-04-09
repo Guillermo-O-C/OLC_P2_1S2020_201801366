@@ -43,6 +43,16 @@ textarea{
     color: aqua;
     resize: none;
 }
+#entrada{
+    background: url(http://i.imgur.com/2cOaJ.png);
+    background-color: #f1f1f1;
+    background-attachment: local;
+    background-repeat: no-repeat;
+    padding-left: 35px;
+    padding-top: 10px;
+        border-color:#ccc;
+        color: rgb(0, 0, 0);
+}
 body{
     background-color: #721b65;
 }

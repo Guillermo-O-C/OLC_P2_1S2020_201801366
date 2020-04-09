@@ -269,11 +269,13 @@ function AnalizadorLexico(entrada){
                     {
                         agregarToken("NUMERO DECIMAL");
                         isDecimal = false;
+                        columna--;
                         i -= 1;
                     }
                     else
                     {
                         agregarToken("NUMERO");
+                        columna--;
                         i -= 1;
                     }
                     
@@ -288,6 +290,7 @@ function AnalizadorLexico(entrada){
                 else
                 {
                     VerificarResevada();
+                    columna--;
                     i -= 1;
                     /*agregarError(fila, columna, auxlex, "Desconocido");
                     agregarError(fila, columna, c.ToString(), "Desconocido");
@@ -313,6 +316,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("IGUAL");
                 }
@@ -332,6 +336,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("DIAGONAL");
                 }
@@ -344,6 +349,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("ASTERISCO");
                 }
@@ -368,6 +374,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("MAYOR");
                 }
@@ -380,6 +387,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("NOT");
                 }
@@ -392,6 +400,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("MAS");
                 }
@@ -404,6 +413,7 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    columna--;
                     i -= 1;
                     agregarToken("MENOS");
                 }
@@ -425,6 +435,7 @@ function AnalizadorLexico(entrada){
                 if (c.localeCompare('*') == 0 && entrada.charAt(i+1).localeCompare('/')==0)
                 {
                     agregarToken("CADENA");
+                    columna--;
                     i -= 1;
                 }
                 else
@@ -455,7 +466,7 @@ function AnalizadorLexico(entrada){
                 if (c.localeCompare('\'')==0)
                 {
                     auxlex += c;
-                    agregarToken("CADENA");
+                    agregarToken("CADENA HTML");
                 }
                 else
                 {
@@ -521,6 +532,7 @@ function agregarError(fila, columna, val, descripcion){
 }
 function VerificarResevada()
         {
+            columnaToken=columna-1;
             switch (auxlex)
             {
                 case "class":
