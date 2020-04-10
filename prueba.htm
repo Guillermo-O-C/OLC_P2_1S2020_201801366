@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+<title>Title of the document</title>
+<script>
+ var button='<button class="close" type="button" title="Remove this page">×</button>';
+var tabID = 1;
+function resetTab(){
+	var tabs=$("#tab-list li:not(:first)");
+	var len=1
+	$(tabs).each(function(k,v){
+		len++;
+		$(this).find('a').html('Tab ' + len + button);
+	})
+	tabID--;
+}
+
+$(document).ready(function() {
+    $('#btn-add-tab').click(function() {
+        tabID++;
+        $('#tab-list').append($('<li><a href="#tab' + tabID + '" role="tab" data-toggle="tab"><span>Tab ' + tabID + '</span> <span class="glyphicon glyphicon-pencil text-muted edit"></span> <button class="close" type="button" title="Remove this page">×</button></a></li>'));
+        $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '">Tab ' + tabID + ' content</div>'));
+        $(".edit").click(editHandler);
+    });
+    
+    $('#tab-list').on('click', '.close', function() {
+        var tabID = $(this).parents('a').attr('href');
+        $(this).parents('li').remove();
+        $(tabID).remove();
+
+        //display first tab
+        var tabFirst = $('#tab-list a:first');
+        resetTab();
+        tabFirst.tab('show');
+    });
+
+    var list = document.getElementById("tab-list");
+});
+
+var editHandler = function() {
+  var t = $(this);
+  t.css("visibility", "hidden");
+  $(this).prev().attr("contenteditable", "true").focusout(function() {
+    $(this).removeAttr("contenteditable").off("focusout");
+    t.css("visibility", "visible");
+  });
+};
+
+$(".edit").click(editHandler);
+</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                <button id="btn-add-tab" type="button" class="btn btn-primary pull-right">Add Tab</button>
+            </p>
+            <!-- Nav tabs -->
+            <ul id="tab-list" class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#tab1" role="tab" data-toggle="tab"><span>Tab 1 </span><span class="glyphicon glyphicon-pencil text-muted edit"></span></a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div id="tab-content" class="tab-content">
+                <div class="tab-pane fade in active" id="tab1">Tab 1 content</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

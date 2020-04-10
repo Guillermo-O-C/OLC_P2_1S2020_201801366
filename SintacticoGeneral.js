@@ -1,142 +1,30 @@
-var ListaTokens;
+"use strict";
+var ListaTokens =  new Array();
 var ListaErrores = new Array();
 var indice;
 var preAnalisis;
 var errorSintactico;
 var EnableBreakOrContinue;
-var Consola1;
+var ConsolaErrores = "";
 
-function SetUp(Salida, textarea){
-    textarea.value="";
+function SetUp(Salida, textarea, textarea2){
+    textarea.value="Realizando Analisis Sintáctico...";
     ListaTokens = Salida;
-    Consola1 = textarea;
+    textarea.value = ConsolaErrores;
     ListaErrores= new Array();
     indice = 0;
     EnableBreakOrContinue=0;
     preAnalisis = ListaTokens[indice];
     errorSintactico = false;
     console.log(ListaTokens);
-    Start();
+    Sentencias();
     console.log(ListaErrores);
     if(ListaErrores.length>0){
-        textarea.value = ImprimirErrores();
+        textarea.value = "Se ha terminado el análisis sintáctico y se encontraron los siguientes errores:\n\n";
+        textarea.value += ImprimirErrores();
     }else{
         //Traducir
-    }
-}
-function Start(){
-    if(preAnalisis!=null){
-        if(preAnalisis.tipo == "PR INT"){
-            Parea("PR INT");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
-            }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "PR DOUBLE"){
-            Parea("PR DOUBLE");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
-            }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "PR STRING"){
-            Parea("PR STRING");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
-            }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "PR BOOL"){
-            Parea("PR BOOL");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
-            }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "PR CHAR"){
-            Parea("PR CHAR");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
-            }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "ID"){
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//asignación
-                Llamada_Metodo();
-            }else if(preAnalisis.tipo == "MAS MAS"){
-                Operador_INC_DEC();
-            }else if(preAnalisis.tipo == "MENOS MENOS"){
-                Operador_INC_DEC();    
-            }else{
-                Asignacion();
-            }
-            Start();
-        }else if(preAnalisis.tipo == "PR VOID"){
-            Parea("PR VOID");
-            if(preAnalisis.tipo =="PR MAIN"){
-                Parea("PR MAIN");
-            }else{
-                Parea("ID");
-            }
-            Parea("ABRIR PARENTESIS");
-            Parea("CERRAR PARENTESIS");
-            Parea("ABRIR LLAVES");
-            Sentencias();
-            Parea("CERRAR LLAVES");
-            Start();
-        }else if(preAnalisis.tipo == "PR CLASS"){
-                Parea("PR CLASS");
-                Parea("ID");
-                Parea("ABRIR LLAVES");
-                Start();
-                Parea("CERRAR LLAVES");
-                Start();
-        }else if(preAnalisis.tipo == "PR CONSOLE"){
-            Parea("PR CONSOLE");
-            Parea("PUNTO");
-            Parea("PR WRITE");
-            Parea("ABRIR PARENTESIS");
-            if(preAnalisis.tipo == "CADENA HTML"){
-                Parea("CADENA HTML");
-                Impresion_P();
-            }else{
-                Expresion();
-            }
-            Parea("CERRAR PARENTESIS"); 
-            Parea("PUNTO COMA");
-            Start();
-        }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
-            Parea("DOBLE DIAGONAL");
-            Parea("CADENA");
-            Start();
-        }else if(preAnalisis.tipo == "DIAGONAL ASTERISCO"){
-            Parea("DIAGONAL ASTERISCO");
-            Parea("CADENA");
-            Parea("ASTERISCO DIAGONAL");
-            Start();
-        }else{            
-            console.log(">> Error sintactico no se esperaba [" + preAnalisis.tipo + "], corresponde a otro ambiente, en la fila  "+preAnalisis.fila  );            
-            agregarError(preAnalisis.tipo,  "No debía de aparecer aquí",preAnalisis.fila, preAnalisis.columna);
-            errorSintactico = true;
-            Start();
-        }
+        BegginTranslating(Salida, textarea, textarea2);
     }
 }
 function Sentencias(){
@@ -144,32 +32,52 @@ function Sentencias(){
         if(preAnalisis.tipo == "PR INT"){
             Parea("PR INT");
             Parea("ID");
-            Lista_ID_P();
-            Declaracion_Asignacion_P();
+            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                Declaracion_Funcion();
+            }else{//Declaración de variables
+                Lista_ID_P();
+                Declaracion_Asignacion_P();
+            }
             Sentencias();
         }else if(preAnalisis.tipo == "PR DOUBLE"){
             Parea("PR DOUBLE");
             Parea("ID");
-            Lista_ID_P();
-            Declaracion_Asignacion_P();
+            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                Declaracion_Funcion();
+            }else{//Declaración de variables
+                Lista_ID_P();
+                Declaracion_Asignacion_P();
+            }
             Sentencias();
         }else if(preAnalisis.tipo == "PR STRING"){
             Parea("PR STRING");
             Parea("ID");
-            Lista_ID_P();
-            Declaracion_Asignacion_P();
+            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                Declaracion_Funcion();
+            }else{//Declaración de variables
+                Lista_ID_P();
+                Declaracion_Asignacion_P();
+            }
             Sentencias();
         }else if(preAnalisis.tipo == "PR BOOL"){
             Parea("PR BOOL");
             Parea("ID");
-            Lista_ID_P();
-            Declaracion_Asignacion_P();
+            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                Declaracion_Funcion();
+            }else{//Declaración de variables
+                Lista_ID_P();
+                Declaracion_Asignacion_P();
+            }
             Sentencias();
         }else if(preAnalisis.tipo == "PR CHAR"){
             Parea("PR CHAR");
             Parea("ID");
-            Lista_ID_P();
-            Declaracion_Asignacion_P();
+            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                Declaracion_Funcion();
+            }else{//Declaración de variables
+                Lista_ID_P();
+                Declaracion_Asignacion_P();
+            }
             Sentencias();
         }else if(preAnalisis.tipo == "ID"){
             Parea("ID");
@@ -183,6 +91,26 @@ function Sentencias(){
                 Asignacion();
             }
             Sentencias();
+        }else if(preAnalisis.tipo == "PR VOID"){
+            Parea("PR VOID");
+            if(preAnalisis.tipo =="PR MAIN"){
+                Parea("PR MAIN");
+            }else{
+                Parea("ID");
+            }
+            Parea("ABRIR PARENTESIS");
+            Parea("CERRAR PARENTESIS");
+            Parea("ABRIR LLAVES");
+            Sentencias();
+            Parea("CERRAR LLAVES");
+            Sentencias();
+        }else if(preAnalisis.tipo == "PR CLASS"){
+                Parea("PR CLASS");
+                Parea("ID");
+                Parea("ABRIR LLAVES");
+                Sentencias();
+                Parea("CERRAR LLAVES");
+                Sentencias();
         }else if(preAnalisis.tipo == "PR CONSOLE"){
             Parea("PR CONSOLE");
             Parea("PUNTO");
@@ -241,6 +169,7 @@ function Sentencias(){
             }
         }else{            
             //Epsilon
+           // ConsolaErrores+="El análisi sintáctico ha finalizado";
         }
     }
 }
@@ -770,7 +699,7 @@ function Parea(tipoToken)
             indice++;
             if(indice==ListaTokens.length-1){
                 preAnalisis==null;
-                Consola1.value+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
+                ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
             }else{
                 preAnalisis = ListaTokens[indice];
             } 
@@ -809,16 +738,16 @@ function agregarError(obtenido, esperado, fila, columna)
             Error.fila = fila;
             Error.columna = columna;
             ListaErrores.push(Error);  
-            Consola1.value+="Se obtuvo: "+Error.obtenido;
+            ConsolaErrores+="Se obtuvo: "+Error.obtenido;
             if(esperado=="No debía de aparecer aquí")
             {
-                Consola1.value+=" No debía de aparecer aquí";
+                ConsolaErrores+=" No debía de aparecer aquí";
             }else{                 
-                Consola1.value+=" -Se buscaba: "+Error.esperado;
+                ConsolaErrores+=" -Se buscaba: "+Error.esperado;
             }
-            Consola1.value+=" -Fila: "+Error.fila;
-            Consola1.value+=+" -Columna: "+Error.columna;
-            Consola1.value+="\n\n"; 
+            ConsolaErrores+=" -Fila: "+Error.fila;
+            ConsolaErrores+=+" -Columna: "+Error.columna;
+            ConsolaErrores+="\n\n"; 
             if (indice < ListaTokens.length)
             {
                 while(true){
@@ -826,7 +755,7 @@ function agregarError(obtenido, esperado, fila, columna)
                         indice++;
                         if(indice>=ListaTokens.length-1){
                             preAnalisis==null;
-                            Consola1.value+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
+                            ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
                         }else{
                             preAnalisis = ListaTokens[indice];                            
                         } 

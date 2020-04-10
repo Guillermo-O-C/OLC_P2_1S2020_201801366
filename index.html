@@ -1,0 +1,134 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="estilos.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="AnalizadorLexico.js"></script>
+        <script type="text/javascript" src="SintacticoGeneral.js"></script>
+        <script type="text/javascript" src="Traductor.js"></script>
+        <script>
+            function LoadFile(){
+                document.getElementById("FileLoader").style.display="block";
+            }
+            function Salir(){
+                self.close();
+            }
+        </script><script>
+            var button='<button class="close" type="button" title="Remove this page">×</button>';
+           var tabID = 1;
+           function resetTab(){
+               var tabs=$("#tab-list li:not(:first)");
+               var len=1
+               $(tabs).each(function(k,v){
+                   len++;
+                   $(this).find('a').html('Tab ' + len + button);
+               })
+               tabID--;
+           }           
+           $(document).ready(function() {
+               $('#btn-add-tab').click(function() {
+                   tabID++;
+                   $('#tab-list').append($('<li><a href="#tab' + tabID + '" role="tab" data-toggle="tab" type="button" class="btn btn-info" style="margin-right: 1px;"><span>Tab ' + tabID + '</span> <span class="glyphicon glyphicon-pencil text-muted edit"></span> <button class="close" type="button" title="Remove this page">×</button></a></li>'));
+                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2);">Analizar Entrada</button></div>'));
+                   $(".edit").click(editHandler);
+               });
+               
+               $('#tab-list').on('click', '.close', function() {
+                   var tabID = $(this).parents('a').attr('href');
+                   $(this).parents('li').remove();
+                   $(tabID).remove();
+           
+                   //display first tab
+                   var tabFirst = $('#tab-list a:first');
+                   resetTab();
+                   tabFirst.tab('show');
+               });
+           
+               var list = document.getElementById("tab-list");
+           });
+           
+           var editHandler = function() {
+             var t = $(this);
+             t.css("visibility", "hidden");
+             $(this).prev().attr("contenteditable", "true").focusout(function() {
+               $(this).removeAttr("contenteditable").off("focusout");
+               t.css("visibility", "visible");
+             });
+           };
+           
+           $(".edit").click(editHandler);
+           </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="#">Traducto PY</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <svg class="bi bi-archive-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM6 7a.5.5 0 000 1h4a.5.5 0 000-1H6zM.8 1a.8.8 0 00-.8.8V3a.8.8 0 00.8.8h14.4A.8.8 0 0016 3V1.8a.8.8 0 00-.8-.8H.8z" clip-rule="evenodd"/>
+                      </svg>
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#" id="btn-add-tab">Nuevo Documento en blanco</a>
+                    <a class="dropdown-item" href="#">Abrir Documento</a>
+                  </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <svg class="bi bi-files" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M3 2h8a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V4a2 2 0 012-2zm0 1a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H3z" clip-rule="evenodd"/>
+                            <path d="M5 0h8a2 2 0 012 2v10a2 2 0 01-2 2v-1a1 1 0 001-1V2a1 1 0 00-1-1H5a1 1 0 00-1 1H3a2 2 0 012-2z"/>
+                          </svg>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                  </li>
+              </ul>
+            </div>
+          </nav>
+          <div class="container">
+            <div>
+                <div class="col-xl-10">
+                    <!-- Nav tabs -->
+                    <ul id="tab-list" class="nav nav-tabs" role="tablist">
+  
+                       <li></p></li>
+               
+                        <li class="active"><a href="#tab1" role="tab" data-toggle="tab" type="button" class="btn btn-info" style="margin-right: 1px;"><span>Tab 1 </span><span class="glyphicon glyphicon-pencil text-muted edit"></span></a></li>
+                    </ul>
+        
+                    <!-- Tab panes -->
+                    <div id="tab-content" class="tab-content" width=100%>
+                        <div class="tab-pane fade in active" id="tab1">
+                            <div id="left">
+                                <textarea id="entrada"  class="entrada"></textarea>
+                                <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2);">Analizar Entrada</button>
+                            </div>
+                            </div> 
+                            <div id="right">
+                                <textarea id="consola1" class="consola1"  disabled></textarea>
+                                <textarea id="consola2" class="consola2"disabled></textarea>
+                            </div>                       
+                    </div>
+                </div>
+            </div>
+                            <div id="leftdown">
+                                <table algin=center border="1" id="variables" style="margin-left: 10%; text-align: center;" width=80%>
+                                    <tr><td>Nombre</td><td>Tipo</td><td>Línea</td></tr>
+                                </table>
+                            </div>  
+        </div>
+    </body>
+</html>

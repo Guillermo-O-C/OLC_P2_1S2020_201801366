@@ -20,11 +20,12 @@ function EnviarEntrada(text, textarea, textarea2){
     AnalizadorLexico(text);
     console.log(Salida);
     console.log(Errores);
-    if(Errores.length>0){        
-        textarea.value = PrintErrores();
+    if(Errores.length>0){  
+        textarea.value = "Se ha terminado el análisis léxico y se encontraron los siguientes errores:\n\n";      
+        textarea.value += PrintErrores();
     }else{
       //  textarea.value = PrintTokens();
-        SetUp(Salida, textarea);
+        SetUp(Salida, textarea, textarea2);
     }
 }
 function PrintTokens(){
@@ -43,7 +44,7 @@ function PrintTokens(){
     return text;
 }
 function PrintErrores(){
-    var text ="Se encontraron los siguientes errores léxicos:\n";
+    var text ="";
     var i =0;
    for(let error of Errores){
        i++;
@@ -239,14 +240,16 @@ function AnalizadorLexico(entrada){
                 {
                     if (c.localeCompare('#') == 0 && i == entrada.length - 1)
                     {
-                        console.log("hemos concluido el análisis con éxito " + auxlex);
-                       // agregarError(fila, columna, auxlex, "Desconocido");
+                        console.log("Se ha concluido el análisis léxico con éxito " + auxlex);
+                       // agregarErrorLexico(fila, columna, auxlex, "Desconocido");
                     }
                     else
                     {
                         console.log("Error Léxico con " + c);
-                        agregarError(fila, columna, auxlex, "Desconocido");
-                        agregarError(fila, columna, c, "Desconocido");
+                        if(auxlex!=""){
+                            agregarErrorLexico(fila, columna, auxlex, "Desconocido");
+                        }
+                        agregarErrorLexico(fila, columna, c, "Desconocido");
                         estado = 0;
                     }
                 }
@@ -292,8 +295,8 @@ function AnalizadorLexico(entrada){
                     VerificarResevada();
                     columna--;
                     i -= 1;
-                    /*agregarError(fila, columna, auxlex, "Desconocido");
-                    agregarError(fila, columna, c.ToString(), "Desconocido");
+                    /*agregarErrorLexico(fila, columna, auxlex, "Desconocido");
+                    agregarErrorLexico(fila, columna, c.ToString(), "Desconocido");
                     estado = 0;*/
                 }
                 break;
@@ -480,8 +483,8 @@ function AnalizadorLexico(entrada){
                     agregarToken("OR");
                 }else{      
                     console.log("Error Léxico con " + c);
-                    agregarError(fila, columna, auxlex, "Desconocido");
-                    agregarError(fila, columna, c, "Desconocido");
+                    agregarErrorLexico(fila, columna, auxlex, "Desconocido");
+                    agregarErrorLexico(fila, columna, c, "Desconocido");
                     estado = 0;
                 }
                 break;
@@ -491,8 +494,8 @@ function AnalizadorLexico(entrada){
                     agregarToken("AND");
                 }else{      
                     console.log("Error Léxico con " + c);
-                    agregarError(fila, columna, auxlex, "Desconocido");
-                    agregarError(fila, columna, c, "Desconocido");
+                    agregarErrorLexico(fila, columna, auxlex, "Desconocido");
+                    agregarErrorLexico(fila, columna, c, "Desconocido");
                     estado = 0;
                 }
                 break;
@@ -511,7 +514,7 @@ function agregarToken(tipo)
             auxlex = "";
             estado = 0;
 }
-function agregarError(fila, columna, val, descripcion){
+function agregarErrorLexico(fila, columna, val, descripcion){
             if (val != "")
             {
                 if (val != " ")
