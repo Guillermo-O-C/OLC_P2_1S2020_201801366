@@ -7,6 +7,7 @@ var EnableBreakOrContinue;
 
 function SetUp(Salida, textarea){
     ListaTokens = Salida;
+    Consola1 = textarea;
     ListaErrores= new Array();
     indice = 0;
     EnableBreakOrContinue=0;
@@ -15,6 +16,11 @@ function SetUp(Salida, textarea){
     console.log(ListaTokens);
     Start();
     console.log(ListaErrores);
+    if(ListaErrores.length>0){
+        textarea.value = ImprimirErrores();
+    }else{
+        //Traducir
+    }
 }
 function Start(){
     if(preAnalisis!=null){
@@ -28,8 +34,8 @@ function Start(){
                 Declaracion_Asignacion_P();
             }
             Start();
-        }else if(preAnalisis.tipo == "PR FLOAT"){
-            Parea("PR FLOAT");
+        }else if(preAnalisis.tipo == "PR DOUBLE"){
+            Parea("PR DOUBLE");
             Parea("ID");
             if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 Declaracion_Funcion();
@@ -101,6 +107,7 @@ function Start(){
                 Expresion();
             }
             Parea("CERRAR PARENTESIS"); 
+            Parea("PUNTO COMA");
             Start();
         }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
             Parea("DOBLE DIAGONAL");
@@ -112,9 +119,10 @@ function Start(){
             Parea("ASTERISCO DIAGONAL");
             Start();
         }else{            
-            console.log(">> Error sintactico no se esperaba [" + preAnalisis.tipo + "], corresponde a otro ambiente en la fila  "+preAnalisis.fila  );            
+            console.log(">> Error sintactico no se esperaba [" + preAnalisis.tipo + "], corresponde a otro ambiente, en la fila  "+preAnalisis.fila  );            
             agregarError(preAnalisis.tipo,  "No debía de aparecer aquí",preAnalisis.fila, preAnalisis.columna);
             errorSintactico = true;
+            Start();
         }
     }
 }
@@ -125,8 +133,8 @@ function Sentencias(){
         Lista_ID_P();
         Declaracion_Asignacion_P();
         Sentencias();
-    }else if(preAnalisis.tipo == "PR FLOAT"){
-        Parea("PR FLOAT");
+    }else if(preAnalisis.tipo == "PR DOUBLE"){
+        Parea("PR DOUBLE");
         Parea("ID");
         Lista_ID_P();
         Declaracion_Asignacion_P();
@@ -173,6 +181,7 @@ function Sentencias(){
             Expresion();
         }
         Parea("CERRAR PARENTESIS"); 
+        Parea("PUNTO COMA");
         Sentencias();
     }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
         Parea("DOBLE DIAGONAL");
@@ -595,8 +604,8 @@ function Parametros_P(){
 function Tipo_Dato(){
     if(preAnalisis.tipo == "PR INT"){
         Parea("PR INT");
-    }else if(preAnalisis.tipo == "PR FLOAT"){
-        Parea("PR FLOAT");
+    }else if(preAnalisis.tipo == "PR DOUBLE"){
+        Parea("PR DOUBLE");
     }else if(preAnalisis.tipo == "PR STRING"){
         Parea("PR STRING");
     }else if(preAnalisis.tipo == "PR BOOL"){
@@ -613,20 +622,16 @@ function Parea(tipoToken)
 {
     if (errorSintactico==true)
     {
-        
-                        if (indice < ListaTokens.length)
-                        {
-                            while(preAnalisis.tipo != "PUNTO COMA" )
-                            {
-                                indice++;
-                                preAnalisis = ListaTokens[indice];
-                                if (preAnalisis.tipo == "PUNTO COMA")
-                                {
-                                    errorSintactico = false;
-                                }
-                            }
-
-                        }
+      
+        if(preAnalisis.tipo == tipoToken){
+            indice++;
+            if(indice==ListaTokens.length-1){
+                preAnalisis==null;
+            }else{
+                preAnalisis = ListaTokens[indice];
+            } 
+            errorSintactico=false; 
+        }                                    
     }
     else
     {
@@ -638,7 +643,7 @@ function Parea(tipoToken)
                 indice++;
                 preAnalisis = ListaTokens[indice];
                 if(indice == ListaTokens.length){
-                    preAnalisis=null;
+                    preAnalisis=null;                    
                 }
             }
             else
@@ -659,5 +664,43 @@ function agregarError(obtenido, esperado, fila, columna)
             Error.esperado = esperado;
             Error.fila = fila;
             Error.columna = columna;
-            ListaErrores.push(Error);         
+            ListaErrores.push(Error);   
+            if (indice < ListaTokens.length)
+            {
+                while(true){
+                    if(preAnalisis.tipo == "PUNTO COMA" || preAnalisis.tipo == "CERRAR LLAVES"){
+                        indice++;
+                        if(indice==ListaTokens.length-1){
+                            preAnalisis==null;
+                        }else{
+                            preAnalisis = ListaTokens[indice];                            
+                        } 
+                        errorSintactico=false;
+                        break;
+                    }else{
+                        indice++;
+                        if(indice==ListaTokens.length-1){
+                            preAnalisis==null;
+                            break;
+                        }else{
+                            preAnalisis = ListaTokens[indice];                            
+                        } 
+                    }
+                    
+                }
+            }      
+}
+function ImprimirErrores(){
+    var text ="";
+    var i =0;
+   for(let Error of ListaErrores){
+       i++;
+      text+=i+".Se obtuvo: ";
+      text+=Error.obtenido+" -Se buscaba: ";
+      text+=Error.esperado+" -Fila: ";
+      text+=Error.fila+" -Columna: ";
+      text+=Error.columna;
+      text+="\n\n";
+   }
+    return text;
 }

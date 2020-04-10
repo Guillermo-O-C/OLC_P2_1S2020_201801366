@@ -500,7 +500,6 @@ function AnalizadorLexico(entrada){
     }
     return Salida;
 }
-
 function agregarToken(tipo)
 {
             var token = new Object();
@@ -544,14 +543,14 @@ function VerificarResevada()
                 case "void":
                     agregarToken("PR VOID");
                     break;
-                case "Main":
+                case "main":
                     agregarToken("PR MAIN");
                     break;
                 case "int":
                     agregarToken("PR INT");
                     break;
-                case "float":
-                    agregarToken("PR FLOAT");
+                case "double":
+                    agregarToken("PR DOUBLE");
                     break;
                 case "string":
                     agregarToken("PR STRING");
