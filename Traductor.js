@@ -1,24 +1,24 @@
 "use strict";
-var ListaTokens =  new Array();
-var ListaErrores = new Array();
 var indice;
-var preAnalisis;
+var preAnalisis_T;
 var errorSintactico;
 var EnableBreakOrContinue;
 var ConsolaErrores = "";
 var ConsolaSalida="";
 var Tabulaciones =0;
-var 
+var CurrentLine=1;
+var temporalID="";
 function BegginTranslating(Salida, textarea, textarea2){
+    ConsolaSalida="";
     textarea.value="Realizando traducción..";
     ListaTokens = Salida;
     ListaErrores= new Array();
     indice = 0;
     EnableBreakOrContinue=0;
-    preAnalisis = ListaTokens[indice];
+    preAnalisis_T = ListaTokens[indice];
     errorSintactico = false;
     console.log(ListaTokens);
-    Sentencias();
+    Sentencias_T();
     console.log(ListaErrores);
     if(ListaErrores.length>0){
         textarea.value = ImprimirErrores();
@@ -27,150 +27,168 @@ function BegginTranslating(Salida, textarea, textarea2){
         //Traducir
     }
 }
-function Sentencias(){
-    if(preAnalisis!=null){
-        if(preAnalisis.tipo == "PR INT"){
-            Parea("PR INT");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
+function Sentencias_T(){
+    if(preAnalisis_T!=null){
+        if(preAnalisis_T.tipo == "PR INT"){
+            Parea_T("PR INT");
+            temporalID=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                ConsolaSalida+="def "+temporalID;
+                Declaracion_Funcion_T();
             }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
+                ConsolaSalida+="var "+temporalID;
+                Lista_ID_P_T();
+                Declaracion_Asignacion_P_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR DOUBLE"){
-            Parea("PR DOUBLE");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR DOUBLE"){
+            Parea_T("PR DOUBLE");
+            temporalID=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                ConsolaSalida+="def "+temporalID;
+                Declaracion_Funcion_T();
             }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
+                ConsolaSalida+="var "+temporalID;
+                Lista_ID_P_T();
+                Declaracion_Asignacion_P_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR STRING"){
-            Parea("PR STRING");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR STRING"){
+            Parea_T("PR STRING");
+            temporalID=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                ConsolaSalida+="def "+temporalID;
+                Declaracion_Funcion_T();
             }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
+                ConsolaSalida+="var "+temporalID;
+                Lista_ID_P_T();
+                Declaracion_Asignacion_P_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR BOOL"){
-            Parea("PR BOOL");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR BOOL"){
+            Parea_T("PR BOOL");
+            temporalID=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                ConsolaSalida+="def "+temporalID;
+                Declaracion_Funcion_T();
             }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
+                ConsolaSalida+="var "+temporalID;
+                Lista_ID_P_T();
+                Declaracion_Asignacion_P_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR CHAR"){
-            Parea("PR CHAR");
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Declaración de un función
-                Declaracion_Funcion();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR CHAR"){
+            Parea_T("PR CHAR");
+            temporalID=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
+                ConsolaSalida+="def "+temporalID;
+                Declaracion_Funcion_T();
             }else{//Declaración de variables
-                Lista_ID_P();
-                Declaracion_Asignacion_P();
+                ConsolaSalida+=addTabs()+"var "+temporalID;
+                Lista_ID_P_T();
+                Declaracion_Asignacion_P_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "ID"){
-            Parea("ID");
-            if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
-                Llamada_Metodo();
-            }else if(preAnalisis.tipo == "MAS MAS"){
-                Operador_INC_DEC();
-            }else if(preAnalisis.tipo == "MENOS MENOS"){
-                Operador_INC_DEC();    
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "ID"){
+            ConsolaSalida+=preAnalisis_T.lexema;
+            Parea_T("ID");
+            if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
+                ConsolaSalida+="(";
+                Llamada_Metodo_T();
+            }else if(preAnalisis_T.tipo == "MAS MAS"){
+                Operador_INC_DEC_T();
+            }else if(preAnalisis_T.tipo == "MENOS MENOS"){
+                Operador_INC_DEC_T();    
             }else{
-                Asignacion();
+                Asignacion_T();
             }
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR VOID"){
-            Parea("PR VOID");
-            if(preAnalisis.tipo =="PR MAIN"){
-                Parea("PR MAIN");
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR VOID"){
+            ConsolaSalida+="def "+temporalID;
+            Parea_T("PR VOID");
+            if(preAnalisis_T.tipo =="PR MAIN"){
+                Parea_T("PR MAIN");
             }else{
-                Parea("ID");
+                Parea_T("ID");
             }
-            Parea("ABRIR PARENTESIS");
-            Parea("CERRAR PARENTESIS");
-            Parea("ABRIR LLAVES");
-            Sentencias();
-            Parea("CERRAR LLAVES");
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR CLASS"){
-                Parea("PR CLASS");
-                Parea("ID");
-                Parea("ABRIR LLAVES");
-                Sentencias();
-                Parea("CERRAR LLAVES");
-                Sentencias();
-        }else if(preAnalisis.tipo == "PR CONSOLE"){
-            Parea("PR CONSOLE");
-            Parea("PUNTO");
-            Parea("PR WRITE");
-            Parea("ABRIR PARENTESIS");
-            if(preAnalisis.tipo == "CADENA HTML"){
-                Parea("CADENA HTML");
-                Impresion_P();
+            Parea_T("ABRIR PARENTESIS");
+            Parea_T("CERRAR PARENTESIS");
+            Parea_T("ABRIR LLAVES");
+            Sentencias_T();
+            Parea_T("CERRAR LLAVES");
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR CLASS"){
+                Parea_T("PR CLASS");
+                Parea_T("ID");
+                Parea_T("ABRIR LLAVES");
+                Sentencias_T();
+                Parea_T("CERRAR LLAVES");
+                Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR CONSOLE"){
+            Parea_T("PR CONSOLE");
+            Parea_T("PUNTO");
+            Parea_T("PR WRITE");
+            Parea_T("ABRIR PARENTESIS");
+            if(preAnalisis_T.tipo == "CADENA HTML"){
+                Parea_T("CADENA HTML");
+                Impresion_P_T();
             }else{
-                Expresion();
+                Expresion_T();
             }
-            Parea("CERRAR PARENTESIS"); 
-            Parea("PUNTO COMA");
-            Sentencias();
-        }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
+            Parea_T("CERRAR PARENTESIS"); 
+            Parea_T("PUNTO COMA");
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "DOBLE DIAGONAL"){
             ConsolaSalida+="# ";
-            Parea("DOBLE DIAGONAL");
-            ConsolaSalida+=preAnalisis.lexema;
-            Parea("CADENA");            
-            Sentencias();
-        }else if(preAnalisis.tipo == "DIAGONAL ASTERISCO"){
+            Parea_T("DOBLE DIAGONAL");
+            ConsolaSalida+=preAnalisis_T.lexema;
+            Parea_T("CADENA");            
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "DIAGONAL ASTERISCO"){
             ConsolaSalida+="''' ";
-            Parea("DIAGONAL ASTERISCO");
-            ConsolaSalida+=preAnalisis.lexema;
-            Parea("CADENA");
+            Parea_T("DIAGONAL ASTERISCO");
+            ConsolaSalida+=preAnalisis_T.lexema;
+            Parea_T("CADENA");
             ConsolaSalida+="'''";
-            Parea("ASTERISCO DIAGONAL");
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR IF"){
-        Declaracion_If();
-        Sentencias();
-        }else if(preAnalisis.tipo == "PR SWITCH"){
-            Declaracion_Swith();
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR FOR"){
-            Declaracion_For();
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR WHILE"){
-            Declaracion_While();
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR DO"){
-            Declaracion_Do_While();
-            Sentencias();
-        }else if(preAnalisis.tipo == "PR BREAK"){
+            Parea_T("ASTERISCO DIAGONAL");
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR IF"){
+        Declaracion_If_T();
+        Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR SWITCH"){
+            Declaracion_Swith_T();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR FOR"){
+            Declaracion_For_T();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR WHILE"){
+            Declaracion_While_T();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR DO"){
+            Declaracion_Do_While_T();
+            Sentencias_T();
+        }else if(preAnalisis_T.tipo == "PR BREAK"){
             if(EnableBreakOrContinue>0){
-                Parea("PR BREAK");
-                Parea("PUNTO COMA");
+                Parea_T("PR BREAK");
+                Parea_T("PUNTO COMA");
             }else{
-                console.log(">> Error no se esperaba [ break ] en la fila  "+preAnalisis.fila);
+                console.log(">> Error no se esperaba [ break ] en la fila  "+preAnalisis_T.fila);
                 errorSintactico = true;
-                agregarError(preAnalisis.tipo,  " no está en ciclo de repetición ",preAnalisis.fila, preAnalisis.columna);
+                agregarError_T(preAnalisis_T.tipo,  " no está en ciclo de repetición ",preAnalisis_T.fila, preAnalisis_T.columna);
             }
-        }else if(preAnalisis.tipo == "PR CONTINUE"){
+        }else if(preAnalisis_T.tipo == "PR CONTINUE"){
             if(EnableBreakOrContinue>0){
-                Parea("PR CONTINUE");
-                Parea("PUNTO COMA");
+                Parea_T("PR CONTINUE");
+                Parea_T("PUNTO COMA");
             }else{
-                console.log(">> Error no se esperaba [ continue ] en la fila  "+preAnalisis.fila);
+                console.log(">> Error no se esperaba [ continue ] en la fila  "+preAnalisis_T.fila);
                 errorSintactico = true;
-                agregarError(preAnalisis.tipo,  " no está en ciclo de repetición ",preAnalisis.fila, preAnalisis.columna);
+                agregarError_T(preAnalisis_T.tipo,  " no está en ciclo de repetición ",preAnalisis_T.fila, preAnalisis_T.columna);
             }
         }else{            
             //Epsilon
@@ -178,535 +196,567 @@ function Sentencias(){
         }
     }
 }
-function Expresion_Relacional(){
-    Termino_Relacional();
-    Expresion_Relacional_P();
+function Expresion_Relacional_T(){
+    Termino_Relacional_T();
+    Expresion_Relacional_T_P();
 }
-function Expresion_Relacional_P(){
-    if(preAnalisis.tipo =="MAS"){
-        Parea("MAS");
-        Termino_Relacional();
-        Expresion_Relacional_P();
-    }else if(preAnalisis.tipo =="MENOS"){
-        Parea("MENOS");
-        Termino_Relacional();
-        Expresion_Relacional_P();
-    }else if(preAnalisis.tipo =="ASTERISCO"){
-        Parea("ASTERISCO");
-        Termino_Relacional();
-        Expresion_Relacional_P();
-    }else if(preAnalisis.tipo =="DIAGONAL"){
-        Parea("DIAGONAL");
-        Termino_Relacional();
-        Expresion_Relacional_P();
+function Expresion_Relacional_T_P(){
+    if(preAnalisis_T.tipo =="MAS"){
+        Parea_T("MAS");
+        Termino_Relacional_T();
+        Expresion_Relacional_T_P();
+    }else if(preAnalisis_T.tipo =="MENOS"){
+        Parea_T("MENOS");
+        Termino_Relacional_T();
+        Expresion_Relacional_T_P();
+    }else if(preAnalisis_T.tipo =="ASTERISCO"){
+        Parea_T("ASTERISCO");
+        Termino_Relacional_T();
+        Expresion_Relacional_T_P();
+    }else if(preAnalisis_T.tipo =="DIAGONAL"){
+        Parea_T("DIAGONAL");
+        Termino_Relacional_T();
+        Expresion_Relacional_T_P();
     }else{
         //Epsilon
     }
 }
-function Termino_Relacional(){
-    Factor_Relacional();
-    Termino_Relacional_P();
+function Termino_Relacional_T(){
+    Factor_Relacional_T();
+    Termino_Relacional_T_P();
 }
-function Termino_Relacional_P(){
-    if(preAnalisis.tipo == "MENOR"){
-        Parea("MENOR");
-        Factor_Relacional();
-        Termino_Relacional_P();
-    }else if(preAnalisis.tipo == "MAYOR"){
-        Parea("MAYOR");
-        Factor_Relacional();
-        Termino_Relacional_P();
-    }else if(preAnalisis.tipo == "MENOR IGUAL"){
-        Parea("MENOR IGUAL");
-        Factor_Relacional();
-        Termino_Relacional_P();
-    }else if(preAnalisis.tipo == "MAYOR IGUAL"){
-        Parea("MAYOR IGUAL");
-        Factor_Relacional();
-        Termino_Relacional_P();
-    }else if(preAnalisis.tipo == "IGUAL IGUAL"){
-        Parea("IGUAL IGUAL");
-        Factor_Relacional();
-        Termino_Relacional_P();
-    }else if(preAnalisis.tipo == "DISTINTO"){
-        Parea("DISTINTO");
-        Factor_Relacional();
-        Termino_Relacional_P();
+function Termino_Relacional_T_P(){
+    if(preAnalisis_T.tipo == "MENOR"){
+        Parea_T("MENOR");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
+    }else if(preAnalisis_T.tipo == "MAYOR"){
+        Parea_T("MAYOR");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
+    }else if(preAnalisis_T.tipo == "MENOR IGUAL"){
+        Parea_T("MENOR IGUAL");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
+    }else if(preAnalisis_T.tipo == "MAYOR IGUAL"){
+        Parea_T("MAYOR IGUAL");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
+    }else if(preAnalisis_T.tipo == "IGUAL IGUAL"){
+        Parea_T("IGUAL IGUAL");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
+    }else if(preAnalisis_T.tipo == "DISTINTO"){
+        Parea_T("DISTINTO");
+        Factor_Relacional_T();
+        Termino_Relacional_T_P();
     }else{
         //Epsilon
     }
 }
-function Factor_Relacional(){
-    if(preAnalisis.tipo =="ABRIR PARENTESIS"){
-        Parea("ABRIR PARENTESIS");
-        Expresion_Relacional();
-        Parea("CERRAR PARENTESIS");
-    }else if(preAnalisis.tipo == "NUMERO"){
-        Parea("NUMERO");
-    }else if(preAnalisis.tipo == "ID"){
-        Parea("ID");
-        Llamada_Funcion();
-    }else if(preAnalisis.tipo == "CADENA"){
-        Parea("CADENA");
-    }else if(preAnalisis.tipo == "PR TRUE"){
-        Parea("PR TRUE");
-    }else if(preAnalisis.tipo == "PR FALSE"){
-        Parea("PR FALSE");
-    }else if(preAnalisis.tipo == "NUMERO DECIMAL"){
-        Parea("NUMERO DECIMAL");
+function Factor_Relacional_T(){
+    if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
+        Parea_T("ABRIR PARENTESIS");
+        Expresion_Relacional_T();
+        Parea_T("CERRAR PARENTESIS");
+    }else if(preAnalisis_T.tipo == "NUMERO"){
+        Parea_T("NUMERO");
+    }else if(preAnalisis_T.tipo == "ID"){
+        Parea_T("ID");
+        Llamada_Funcion_T();
+    }else if(preAnalisis_T.tipo == "CADENA"){
+        Parea_T("CADENA");
+    }else if(preAnalisis_T.tipo == "PR TRUE"){
+        Parea_T("PR TRUE");
+    }else if(preAnalisis_T.tipo == "PR FALSE"){
+        Parea_T("PR FALSE");
+    }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
+        Parea_T("NUMERO DECIMAL");
     }else{        
-        console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
-        agregarError(preAnalisis.tipo,  "FACTOR",preAnalisis.fila, preAnalisis.columna);
+        console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
+        agregarError_T(preAnalisis_T.tipo,  "FACTOR",preAnalisis_T.fila, preAnalisis_T.columna);
         errorSintactico = true;
     }
 }
-function Declaracion_Do_While(){
-    Parea("PR DO");
-    Parea("ABRIR LLAVES");
+function Declaracion_Do_While_T(){
+    Parea_T("PR DO");
+    Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
-    Sentencias();
-    Parea("CERRAR LLAVES");
+    Sentencias_T();
+    Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue--;
-    Parea("PR WHILE");
-    Parea("ABRIR PARENTESIS");
-    Condicional_If();
-    Parea("CERRAR PARENTESIS");
-    Parea("PUNTO COMA");
+    Parea_T("PR WHILE");
+    Parea_T("ABRIR PARENTESIS");
+    Condicional_If_T();
+    Parea_T("CERRAR PARENTESIS");
+    Parea_T("PUNTO COMA");
 }
-function Declaracion_While(){
-    Parea("PR WHILE");
-    Parea("ABRIR PARENTESIS");
-    Condicional_If();
-    Parea("CERRAR PARENTESIS");
-    Parea("ABRIR LLAVES");
+function Declaracion_While_T(){
+    Parea_T("PR WHILE");
+    Parea_T("ABRIR PARENTESIS");
+    Condicional_If_T();
+    Parea_T("CERRAR PARENTESIS");
+    Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
-    Sentencias();
-    Parea("CERRAR LLAVES");
-    EnableBreakOrContinue--;
-}
-function Declaracion_For(){
-    Parea("PR FOR");
-    Parea("ABRIR PARENTESIS");
-    Initializaer_For();
-    Expresion_Relacional();
-    Parea("PUNTO COMA");
-    Sentencias();
-    Parea("CERRAR PARENTESIS");
-    Parea("ABRIR LLAVES");
-    EnableBreakOrContinue++;
-    Sentencias();
-    Parea("CERRAR LLAVES");
+    Sentencias_T();
+    Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue--;
 }
-function Operador_INC_DEC(){
-    if(preAnalisis.tipo == "MAS MAS"){
-        Parea("MAS MAS");
-        if(preAnalisis.tipo != "CERRAR PARENTESIS"){
-            Parea("PUNTO COMA");
+function Declaracion_For_T(){
+    Parea_T("PR FOR");
+    Parea_T("ABRIR PARENTESIS");
+    Initializaer_For_T();
+    Expresion_Relacional_T();
+    Parea_T("PUNTO COMA");
+    Sentencias_T();
+    Parea_T("CERRAR PARENTESIS");
+    Parea_T("ABRIR LLAVES");
+    EnableBreakOrContinue++;
+    Sentencias_T();
+    Parea_T("CERRAR LLAVES");
+    EnableBreakOrContinue--;
+}
+function Operador_INC_DEC_T(){
+    if(preAnalisis_T.tipo == "MAS MAS"){
+        Parea_T("MAS MAS");
+        if(preAnalisis_T.tipo != "CERRAR PARENTESIS"){
+            Parea_T("PUNTO COMA");
         }else{
             //Epsilon
             //Para que se pueda declarar como aumento nomrel o dentro de un for
         }
-    }else if(preAnalisis.tipo == "MENOS MENOS"){
-        Parea("MENOS MENOS");
-        if(preAnalisis.tipo != "CERRAR PARENTESIS"){
-            Parea("PUNTO COMA");
+    }else if(preAnalisis_T.tipo == "MENOS MENOS"){
+        Parea_T("MENOS MENOS");
+        if(preAnalisis_T.tipo != "CERRAR PARENTESIS"){
+            Parea_T("PUNTO COMA");
         }else{
             //Epsilon
             //Para que se pueda declarar como aumento nomrel o dentro de un for
         }
     }else{
-        console.log(">> Error sintactico se esperaba [ ++ o --] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        console.log(">> Error sintactico se esperaba [ ++ o --] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  " ++ o -- ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  " ++ o -- ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Declaracion_Swith(){
-    Parea("PR SWITCH");
-    Parea("ABRIR PARENTESIS");
-    Parea("ID");
-    Parea("CERRAR PARENTESIS");
-    Parea("ABRIR LLAVES");
+function Declaracion_Swith_T(){
+    Parea_T("PR SWITCH");
+    Parea_T("ABRIR PARENTESIS");
+    Parea_T("ID");
+    Parea_T("CERRAR PARENTESIS");
+    Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
-    Declaracion_Case();
-    Parea("CERRAR LLAVES");
+    Declaracion_Case_T();
+    Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue++;
 }
-function Declaracion_Case(){
-    Parea("PR CASE");
-    Expresion();
-    Parea("DOS PUNTOS");
-    Sentencias();
-    Declaracion_Case_P();
+function Declaracion_Case_T(){
+    Parea_T("PR CASE");
+    Expresion_T();
+    Parea_T("DOS PUNTOS");
+    Sentencias_T();
+    Declaracion_Case_T_P();
 }
-function Declaracion_Case_P(){
-    if(preAnalisis.tipo == "PR CASE"){
-        Declaracion_Case();
-    }else if(preAnalisis.tipo == "PR DEFAULT"){
-        Parea("PR DEFAULT");
-        Parea("DOS PUNTOS");
-        Sentencias();
+function Declaracion_Case_T_P(){
+    if(preAnalisis_T.tipo == "PR CASE"){
+        Declaracion_Case_T();
+    }else if(preAnalisis_T.tipo == "PR DEFAULT"){
+        Parea_T("PR DEFAULT");
+        Parea_T("DOS PUNTOS");
+        Sentencias_T();
     }else{
-        console.log(">> Error sintactico se esperaba [ case o default] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        console.log(">> Error sintactico se esperaba [ case o default] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  "case o default ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  "case o default ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Declaracion_If(){
-    Parea("PR IF");
-    Parea("ABRIR PARENTESIS");    
-    Condicional_If();
-    Parea("CERRAR PARENTESIS");
-    Parea("ABRIR LLAVES");
-    Sentencias();
-    Parea("CERRAR LLAVES");
-    Declaracion_If_P();
+function Declaracion_If_T(){
+    Parea_T("PR IF");
+    Parea_T("ABRIR PARENTESIS");    
+    Condicional_If_T();
+    Parea_T("CERRAR PARENTESIS");
+    Parea_T("ABRIR LLAVES");
+    Sentencias_T();
+    Parea_T("CERRAR LLAVES");
+    Declaracion_If_P_T();
 }
-function Declaracion_If_P(){
-    if(preAnalisis.tipo == "PR ELSE"){
-        Parea("PR ELSE");
-        Declaracion_Else();
+function Declaracion_If_P_T(){
+    if(preAnalisis_T.tipo == "PR ELSE"){
+        Parea_T("PR ELSE");
+        Declaracion_Else_T();
     }else{
         //Epsilon
     }
 }
-function Declaracion_Else(){
-    if(preAnalisis.tipo == "ABRIR LLAVES"){
-        Parea("ABRIR LLAVES");
-        Sentencias();
-        Parea("CERRAR LLAVES");
-    }else if(preAnalisis.tipo == "PR IF"){
-        Declaracion_If();
+function Declaracion_Else_T(){
+    if(preAnalisis_T.tipo == "ABRIR LLAVES"){
+        Parea_T("ABRIR LLAVES");
+        Sentencias_T();
+        Parea_T("CERRAR LLAVES");
+    }else if(preAnalisis_T.tipo == "PR IF"){
+        Declaracion_If_T();
     }else{
-        console.log(">> Error sintactico se esperaba [ { o if ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        console.log(">> Error sintactico se esperaba [ { o if ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  "{ o if ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  "{ o if ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Condicional_If(){
-    Operador_Not();
-    Expresion_Relacional();
-    Operador_Logico();
+function Condicional_If_T(){
+    Operador_Not_T();
+    Expresion_Relacional_T();
+    Operador_Logico_T();
 }
-function Operador_Relacional(){
-    if(preAnalisis.tipo == "MENOR"){
-        Signo_Operador_Relacional();
-        Expresion();
-    }else if(preAnalisis.tipo == "MAYOR"){
-        Signo_Operador_Relacional();
-        Expresion();
-    }else if(preAnalisis.tipo == "MENOR IGUAL"){
-        Signo_Operador_Relacional();
-        Expresion();
-    }else if(preAnalisis.tipo == "MAYOR IGUAL"){
-        Signo_Operador_Relacional();
-        Expresion();
-    }else if(preAnalisis.tipo == "IGUAL IGUAL"){
-        Signo_Operador_Relacional();
-        Expresion();
-    }else if(preAnalisis.tipo == "DISTINTO"){
-        Signo_Operador_Relacional();
-        Expresion();
+function Operador_Relacional_T(){
+    if(preAnalisis_T.tipo == "MENOR"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
+    }else if(preAnalisis_T.tipo == "MAYOR"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
+    }else if(preAnalisis_T.tipo == "MENOR IGUAL"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
+    }else if(preAnalisis_T.tipo == "MAYOR IGUAL"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
+    }else if(preAnalisis_T.tipo == "IGUAL IGUAL"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
+    }else if(preAnalisis_T.tipo == "DISTINTO"){
+        Signo_Operador_Relacional_T();
+        Expresion_T();
     }else{
         //Epsilon
     }
 }
-function Signo_Operador_Relacional(){
-    if(preAnalisis.tipo == "MENOR"){
-        Parea("MENOR");
-    }else if(preAnalisis.tipo == "MAYOR"){
-        Parea("MAYOR");
-    }else if(preAnalisis.tipo == "MENOR IGUAL"){
-        Parea("MENOR IGUAL");
-    }else if(preAnalisis.tipo == "MAYOR IGUAL"){
-        Parea("MAYOR IGUAL");
-    }else if(preAnalisis.tipo == "IGUAL IGUAL"){
-        Parea("IGUAL IGUAL");
-    }else if(preAnalisis.tipo == "DISTINTO"){
-        Parea("DISTINTO");
+function Signo_Operador_Relacional_T(){
+    if(preAnalisis_T.tipo == "MENOR"){
+        Parea_T("MENOR");
+    }else if(preAnalisis_T.tipo == "MAYOR"){
+        Parea_T("MAYOR");
+    }else if(preAnalisis_T.tipo == "MENOR IGUAL"){
+        Parea_T("MENOR IGUAL");
+    }else if(preAnalisis_T.tipo == "MAYOR IGUAL"){
+        Parea_T("MAYOR IGUAL");
+    }else if(preAnalisis_T.tipo == "IGUAL IGUAL"){
+        Parea_T("IGUAL IGUAL");
+    }else if(preAnalisis_T.tipo == "DISTINTO"){
+        Parea_T("DISTINTO");
     }else{
-        console.log(">> Error sintactico se esperaba [ operador relacional ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        console.log(">> Error sintactico se esperaba [ operador relacional ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  "operador relacional ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  "operador relacional ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Operador_Logico(){
-    if(preAnalisis.tipo == "AND"){
-        Signo_Operador_Logico();
-        Condicional_If();
-    }else if(preAnalisis.tipo == "OR"){
-        Signo_Operador_Logico();
-        Condicional_If();
+function Operador_Logico_T(){
+    if(preAnalisis_T.tipo == "AND"){
+        Signo_Operador_Logico_T();
+        Condicional_If_T();
+    }else if(preAnalisis_T.tipo == "OR"){
+        Signo_Operador_Logico_T();
+        Condicional_If_T();
     }else{
         //Epsilon
     }
 }
-function Signo_Operador_Logico(){
-    if(preAnalisis.tipo == "AND"){
-        Parea("AND");
-    }else if(preAnalisis.tipo == "OR"){
-        Parea("OR");
+function Signo_Operador_Logico_T(){
+    if(preAnalisis_T.tipo == "AND"){
+        Parea_T("AND");
+    }else if(preAnalisis_T.tipo == "OR"){
+        Parea_T("OR");
     }else{
-        console.log(">> Error sintactico se esperaba [ operador lógico ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        console.log(">> Error sintactico se esperaba [ operador lógico ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  "operador lógico ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  "operador lógico ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Operador_Not(){
-    if(preAnalisis.tipo == "NOT"){
-        Parea("NOT");
+function Operador_Not_T(){
+    if(preAnalisis_T.tipo == "NOT"){
+        Parea_T("NOT");
     }else{
         //Epsilon
     }
 }
-function Impresion_P(){
-    if(preAnalisis.tipo == "MAS"){
-        Parea("MAS");
-        Parea("CADENA HTML");
-        Impresion_P();
+function Impresion_P_T(){
+    if(preAnalisis_T.tipo == "MAS"){
+        Parea_T("MAS");
+        Parea_T("CADENA HTML");
+        Impresion_P_T();
     }else{
         //Epsilon
     }
 }
-function Llamada_Metodo(){
-    Parea("ABRIR PARENTESIS");
-    Argumentos();
-    Parea("CERRAR PARENTESIS");
-    Parea("PUNTO COMA");
+function Llamada_Metodo_T(){
+    Parea_T("ABRIR PARENTESIS");
+    Argumentos_T();
+    ConsolaSalida+=")";
+    Parea_T("CERRAR PARENTESIS");
+    ConsolaSalida+=";";
+    Parea_T("PUNTO COMA");
 }
-function Declaracion_Asignacion_P(){
-    if(preAnalisis.tipo == "PUNTO COMA"){
-        Parea("PUNTO COMA");
-    }else if(preAnalisis.tipo == "IGUAL"){
-        Parea("IGUAL");
-        Expresion();
-        Parea("PUNTO COMA");
+function Declaracion_Asignacion_P_T(){
+    if(preAnalisis_T.tipo == "PUNTO COMA"){
+        ConsolaSalida+=";";
+        Parea_T("PUNTO COMA");
+    }else if(preAnalisis_T.tipo == "IGUAL"){
+        ConsolaSalida+=" = ";
+        Parea_T("IGUAL");
+        Expresion_T();
+        ConsolaSalida+=";";
+        Parea_T("PUNTO COMA");
     }else{
-        console.log(">> Error sintactico se esperaba [ = o ; ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
+        console.log(">> Error sintactico se esperaba [ = o ; ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  " = o ; ",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  " = o ; ",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Asignacion(){
-    if(preAnalisis.tipo=="IGUAL"){
-        Parea("IGUAL");
-        Expresion();
-        Parea("PUNTO COMA");
+function Asignacion_T(){
+    if(preAnalisis_T.tipo=="IGUAL"){
+        ConsolaSalida+=" = ";
+        Parea_T("IGUAL");
+        Expresion_T();
+        ConsolaSalida+=";";
+        Parea_T("PUNTO COMA");
     }else{
-        console.log(">> Error sintactico se esperaba [ = ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
+        console.log(">> Error sintactico se esperaba [ = ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
         errorSintactico = true;
-        agregarError(preAnalisis.tipo,  "IGUAL",preAnalisis.fila, preAnalisis.columna);
+        agregarError_T(preAnalisis_T.tipo,  "IGUAL",preAnalisis_T.fila, preAnalisis_T.columna);
     }
 }
-function Lista_ID_P(){
-    if(preAnalisis.tipo == "COMA"){
-        Parea("COMA");
-        Parea("ID");
-        Lista_ID_P()
+function Lista_ID_P_T(){
+    if(preAnalisis_T.tipo == "COMA"){
+        ConsolaSalida+=", ";
+        Parea_T("COMA");
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("ID");
+        Lista_ID_P_T()
     }else{
         //Epsilon
     }
 }
-function Declaracion_Funcion(){
-    Parea("ABRIR PARENTESIS");
-    Parametros();
-    Parea("CERRAR PARENTESIS");
-    Parea("ABRIR LLAVES");
-    Sentencias();
-    Parea("PR RETURN");
-    Expresion();
-    Parea("PUNTO COMA");
-    Parea("CERRAR LLAVES");
+function Declaracion_Funcion_T(){
+    ConsolaSalida+=preAnalisis_T.lexema;
+    Parea_T("ABRIR PARENTESIS");
+    Parametros_T();
+    ConsolaSalida+=preAnalisis_T.lexema;
+    Parea_T("CERRAR PARENTESIS");
+    ConsolaSalida+=":";
+    Tabulaciones++;
+    Parea_T("ABRIR LLAVES");
+    Sentencias_T();
+    Parea_T("PR RETURN");
+    Condicional_If_T();
+    Parea_T("PUNTO COMA");
+    Parea_T("CERRAR LLAVES");
+    Tabulaciones--;
 }
-function ACCIONES_CLASE(){
-
+function Expresion_T(){
+    Termino_T();
+    Expresion_P_T();
 }
-function Expresion(){
-    Termino();
-    Expresion_P();
-}
-function Expresion_P(){
-    if(preAnalisis.tipo =="MAS"){
-        Parea("MAS");
-        Termino();
-        Expresion_P();
-    }else if(preAnalisis.tipo =="MENOS"){
-        Parea("MENOS");
-        Termino();
-        Expresion_P();
+function Expresion_P_T(){
+    if(preAnalisis_T.tipo =="MAS"){
+        ConsolaSalida+="+";
+        Parea_T("MAS");
+        Termino_T();
+        Expresion_P_T();
+    }else if(preAnalisis_T.tipo =="MENOS"){
+        ConsolaSalida+="-";
+        Parea_T("MENOS");
+        Termino_T();
+        Expresion_P_T();
     } else{
         //Epsilon
     }
 }
-function Termino(){
-    Factor();
-    Termino_P();
+function Termino_T(){
+    Factor_T();
+    Termino_P_T();
 }
-function Termino_P(){
-    if(preAnalisis.tipo =="ASTERISCO"){
-        Parea("ASTERISCO");
-        Factor();
-        Termino_P();
-    }else if(preAnalisis.tipo =="DIAGONAL"){
-        Parea("DIAGONAL");
-        Factor();
-        Termino_P();
+function Termino_P_T(){
+    if(preAnalisis_T.tipo =="ASTERISCO"){
+        ConsolaSalida+="*";
+        Parea_T("ASTERISCO");
+        Factor_T();
+        Termino_P_T();
+    }else if(preAnalisis_T.tipo =="DIAGONAL"){
+        ConsolaSalida+="/";
+        Parea_T("DIAGONAL");
+        Factor_T();
+        Termino_P_T();
     }else{
         //Epsilon
     }
 }
-function Factor(){
-    if(preAnalisis.tipo =="ABRIR PARENTESIS"){
-        Parea("ABRIR PARENTESIS");
-        Expresion();
-        Parea("CERRAR PARENTESIS");
-    }else if(preAnalisis.tipo == "NUMERO"){
-        Parea("NUMERO");
-    }else if(preAnalisis.tipo == "ID"){
-        Parea("ID");
-        Llamada_Funcion();
-    }else if(preAnalisis.tipo == "CADENA"){
-        Parea("CADENA");
-    }else if(preAnalisis.tipo == "PR TRUE"){
-        Parea("PR TRUE");
-    }else if(preAnalisis.tipo == "PR FALSE"){
-        Parea("PR FALSE");
-    }else if(preAnalisis.tipo == "NUMERO DECIMAL"){
-        Parea("NUMERO DECIMAL");
+function Factor_T(){
+    if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
+        ConsolaSalida+="(";
+        Parea_T("ABRIR PARENTESIS");
+        Expresion_T();
+        ConsolaSalida+=")";
+        Parea_T("CERRAR PARENTESIS");
+    }else if(preAnalisis_T.tipo == "NUMERO"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("NUMERO");
+    }else if(preAnalisis_T.tipo == "ID"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("ID");
+        Llamada_Funcion_T();
+    }else if(preAnalisis_T.tipo == "CADENA"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("CADENA");
+    }else if(preAnalisis_T.tipo == "PR TRUE"){
+        ConsolaSalida+="True";
+        Parea_T("PR TRUE");
+    }else if(preAnalisis_T.tipo == "PR FALSE"){
+        ConsolaSalida+="False";
+        Parea_T("PR FALSE");
+    }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("NUMERO DECIMAL");
     }else{        
-        console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
-        agregarError(preAnalisis.tipo,  "FACTOR",preAnalisis.fila, preAnalisis.columna);
+        console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
+        agregarError_T(preAnalisis_T.tipo,  "FACTOR",preAnalisis_T.fila, preAnalisis_T.columna);
         errorSintactico = true;
     }
 }
-function Llamada_Funcion(){
-    if(preAnalisis.tipo == "ABRIR PARENTESIS"){
-        Parea("ABRIR PARENTESIS");
-        Argumentos();
-        Parea("CERRAR PARENTESIS");
+function Llamada_Funcion_T(){
+    if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){
+        Parea_T("ABRIR PARENTESIS");
+        Argumentos_T();
+        Parea_T("CERRAR PARENTESIS");
     }else{
         //Epsilon
     }
 }
-function Argumentos(){
-    if(preAnalisis.tipo =="ABRIR PARENTESIS"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "NUMERO"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "ID"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "CADENA"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "PR TRUE"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "PR FALSE"){
-        Expresion();
-        Argumentos_P();
-    }else if(preAnalisis.tipo == "NUMERO DECIMAL"){
-        Expresion();
-        Argumentos_P();
+function Argumentos_T(){
+    if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "NUMERO"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "ID"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "CADENA"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "PR TRUE"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "PR FALSE"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
+    }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Expresion_T();
+        Argumentos_T_P();
     }else{
         //epsilon
     }
 }
-function Argumentos_P(){
-    if(preAnalisis.tipo == "COMA"){
-        Parea("COMA");
-        Argumentos();
+function Argumentos_T_P(){
+    if(preAnalisis_T.tipo == "COMA"){
+        Parea_T("COMA");
+        Argumentos_T();
     }else{
         //Epsilon
     }
 }
-function Parametros(){
-    if(preAnalisis.tipo != "CERRAR PARENTESIS"){
-        Tipo_Dato();
-        Parea("ID");
-        Parametros_P();
+function Parametros_T(){
+    if(preAnalisis_T.tipo != "CERRAR PARENTESIS"){
+        Tipo_Dato_T();
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("ID");
+        Parametros_P_T();
     }else{
         //Epsilon
     }
 }
-function Parametros_P(){
-    if(preAnalisis.tipo =="COMA"){
-        Parea("COMA");
-        Parametros();
+function Parametros_P_T(){
+    if(preAnalisis_T.tipo =="COMA"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("COMA");
+        Parametros_T();
     }else{
         //Epsilon
     }
 }
-function Tipo_Dato(){
-    if(preAnalisis.tipo == "PR INT"){
-        Parea("PR INT");
-    }else if(preAnalisis.tipo == "PR DOUBLE"){
-        Parea("PR DOUBLE");
-    }else if(preAnalisis.tipo == "PR STRING"){
-        Parea("PR STRING");
-    }else if(preAnalisis.tipo == "PR BOOL"){
-        Parea("PR BOOL");
-    }else if(preAnalisis.tipo == "PR CHAR"){
-        Parea("PR CHAR");
+function Tipo_Dato_T(){
+    if(preAnalisis_T.tipo == "PR INT"){
+        Parea_T("PR INT");
+    }else if(preAnalisis_T.tipo == "PR DOUBLE"){
+        Parea_T("PR DOUBLE");
+    }else if(preAnalisis_T.tipo == "PR STRING"){
+        Parea_T("PR STRING");
+    }else if(preAnalisis_T.tipo == "PR BOOL"){
+        Parea_T("PR BOOL");
+    }else if(preAnalisis_T.tipo == "PR CHAR"){
+        Parea_T("PR CHAR");
     }else{        
-        console.log(">> Error sintactico se esperaba [ Tipo de Dato ] en lugar de [" + preAnalisis.tipo + "] en la fila "+preAnalisis.fila );
-        agregarError(preAnalisis.tipo,  "TIPO DE DATO",preAnalisis.fila, preAnalisis.columna);
+        console.log(">> Error sintactico se esperaba [ Tipo de Dato ] en lugar de [" + preAnalisis_T.tipo + "] en la fila "+preAnalisis_T.fila );
+        agregarError_T(preAnalisis_T.tipo,  "TIPO DE DATO",preAnalisis_T.fila, preAnalisis_T.columna);
         errorSintactico = true;
     }
 }
-function Initializaer_For(){
-    if(preAnalisis.tipo == "PR INT"){
-        Parea("PR INT");
-        Parea("ID");
-        Lista_ID_P();
-        Declaracion_Asignacion_P();
-    }else if(preAnalisis.tipo == "PR DOUBLE"){
-        Parea("PR DOUBLE");
-        Parea("ID");
-        Lista_ID_P();
-        Declaracion_Asignacion_P();
-    }else if(preAnalisis.tipo == "PR STRING"){
-        Parea("PR STRING");
-        Parea("ID");
-        Lista_ID_P();
-        Declaracion_Asignacion_P();
-    }else if(preAnalisis.tipo == "PR BOOL"){
-        Parea("PR BOOL");
-        Parea("ID");
-        Lista_ID_P();
-        Declaracion_Asignacion_P();
-    }else if(preAnalisis.tipo == "PR CHAR"){
-        Parea("PR CHAR");
-        Parea("ID");
-        Lista_ID_P();
-        Declaracion_Asignacion_P();
-    }else if(preAnalisis.tipo == "ID"){
-        Parea("ID");
-        if(preAnalisis.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
-            Llamada_Metodo();
-        }else if(preAnalisis.tipo == "MAS MAS"){
-            Operador_INC_DEC();
-        }else if(preAnalisis.tipo == "MENOS MENOS"){
-            Operador_INC_DEC();    
+function Initializaer_For_T(){
+    if(preAnalisis_T.tipo == "PR INT"){
+        Parea_T("PR INT");
+        Parea_T("ID");
+        Lista_ID_P_T();
+        Declaracion_Asignacion_P_T();
+    }else if(preAnalisis_T.tipo == "PR DOUBLE"){
+        Parea_T("PR DOUBLE");
+        Parea_T("ID");
+        Lista_ID_P_T();
+        Declaracion_Asignacion_P_T();
+    }else if(preAnalisis_T.tipo == "PR STRING"){
+        Parea_T("PR STRING");
+        Parea_T("ID");
+        Lista_ID_P_T();
+        Declaracion_Asignacion_P_T();
+    }else if(preAnalisis_T.tipo == "PR BOOL"){
+        Parea_T("PR BOOL");
+        Parea_T("ID");
+        Lista_ID_P_T();
+        Declaracion_Asignacion_P_T();
+    }else if(preAnalisis_T.tipo == "PR CHAR"){
+        Parea_T("PR CHAR");
+        Parea_T("ID");
+        Lista_ID_P_T();
+        Declaracion_Asignacion_P_T();
+    }else if(preAnalisis_T.tipo == "ID"){
+        Parea_T("ID");
+        if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
+            Llamada_Metodo_T();
+        }else if(preAnalisis_T.tipo == "MAS MAS"){
+            Operador_INC_DEC_T();
+        }else if(preAnalisis_T.tipo == "MENOS MENOS"){
+            Operador_INC_DEC_T();    
         }else{
-            Asignacion();
+            Asignacion_T();
         }
     }
 }
-function Parea(tipoToken)
+function Parea_T(tipoToken)
 {
     if (errorSintactico==true)
     {
       
-        if(preAnalisis.tipo == tipoToken){
+        if(preAnalisis_T.tipo == tipoToken){
             indice++;
             if(indice==ListaTokens.length-1){
-                preAnalisis==null;
+                preAnalisis_T==null;
                 ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
             }else{
-                preAnalisis = ListaTokens[indice];
+                preAnalisis_T = ListaTokens[indice];
             } 
             errorSintactico=false; 
         }                                    
@@ -715,27 +765,34 @@ function Parea(tipoToken)
     {
         if (indice < ListaTokens.length)//le quité el length -1
         {
-            console.log("se compara " + preAnalisis.tipo +" con " +  tipoToken);
-            if (preAnalisis.tipo == tipoToken)
+            console.log("se compara " + preAnalisis_T.tipo +" con " +  tipoToken);
+            if (preAnalisis_T.tipo == tipoToken)
             {
                 indice++;
-                preAnalisis = ListaTokens[indice];
+                preAnalisis_T = ListaTokens[indice];
+                
                 if(indice == ListaTokens.length){
-                    preAnalisis=null;                    
+                    preAnalisis_T=null;                    
+                }else{
+                    if(CurrentLine!=preAnalisis_T.fila){
+                        ConsolaSalida+="\n";
+                        addTabs();
+                        CurrentLine=preAnalisis_T.fila;
+                    }
                 }
             }
             else
             {
                 //Se genera un error sintactico y se agrega a la lista de errores sintacitos
-                agregarError(preAnalisis.tipo,  tipoToken,preAnalisis.fila, preAnalisis.columna);
+                agregarError_T(preAnalisis_T.tipo,  tipoToken,preAnalisis_T.fila, preAnalisis_T.columna);
                 //En la impresión solo falta hacer un método para que cunado mande el tipo PR_ALGO me devuleva el palabra resevada algo   !!!
-                console.log(">> Error sintactico se esperaba [" + tipoToken + "] en lugar de [" + preAnalisis.tipo +"] en la fila  "+preAnalisis.fila  );
+                console.log(">> Error sintactico se esperaba [" + tipoToken + "] en lugar de [" + preAnalisis_T.tipo +"] en la fila  "+preAnalisis_T.fila  );
                 errorSintactico = true;
             }
         }
     }
 }
-function agregarError(obtenido, esperado, fila, columna)
+function agregarError_T(obtenido, esperado, fila, columna)
 {
             var Error =  new Object();
             Error.obtenido = obtenido;
@@ -756,23 +813,23 @@ function agregarError(obtenido, esperado, fila, columna)
             if (indice < ListaTokens.length)
             {
                 while(true){
-                    if(preAnalisis.tipo == "PUNTO COMA" || preAnalisis.tipo == "CERRAR LLAVES"){
+                    if(preAnalisis_T.tipo == "PUNTO COMA" || preAnalisis_T.tipo == "CERRAR LLAVES"){
                         indice++;
                         if(indice>=ListaTokens.length-1){
-                            preAnalisis==null;
+                            preAnalisis_T==null;
                             ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
                         }else{
-                            preAnalisis = ListaTokens[indice];                            
+                            preAnalisis_T = ListaTokens[indice];                            
                         } 
                         errorSintactico=false;
                         break;
                     }else{
                         indice++;
                         if(indice==ListaTokens.length-1){
-                            preAnalisis==null;
+                            preAnalisis_T==null;
                             break;
                         }else{
-                            preAnalisis = ListaTokens[indice];                            
+                            preAnalisis_T = ListaTokens[indice];                            
                         } 
                     }
                     
@@ -798,5 +855,5 @@ function addTabs(traducido){
     for(var i=0;i<Tabulaciones;i++){
         tabs+="\t";
     }
-    ConsolaSalida+="\n"+tabs;
+    ConsolaSalida+=tabs;
 }
