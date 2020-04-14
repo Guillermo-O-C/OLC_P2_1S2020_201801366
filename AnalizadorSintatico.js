@@ -5,8 +5,8 @@ var preAnalisis;
 var errorSintactico;
 var EnableBreakOrContinue;
 var Consola1;
-
-function SetUp(Salida, textarea){
+var BreakNeeded;
+function SetUp(Salida, textarea, textarea2){
     textarea.value="";
     ListaTokens = Salida;
     Consola1 = textarea;
@@ -15,15 +15,44 @@ function SetUp(Salida, textarea){
     EnableBreakOrContinue=0;
     preAnalisis = ListaTokens[indice];
     errorSintactico = false;
+    BreakNeeded=false;
     console.log(ListaTokens);
-    Start();
-    console.log(ListaErrores);
+    DirectlyNamespace();
+    console.log(ListaErrores);    
     if(ListaErrores.length>0){
-        textarea.value = ImprimirErrores();
+        textarea.value = "Se ha terminado el análisis sintáctico y se encontraron los siguientes errores:\n\n";
+        textarea.value += ImprimirErrores();
     }else{
         //Traducir
+        BegginTranslating(Salida, textarea, textarea2);
     }
 }
+function DirectlyNamespace(){    
+    if(preAnalisis!=null){
+        if(preAnalisis.tipo == "PR CLASS"){
+            Parea("PR CLASS");
+            Parea("ID");
+            Parea("ABRIR LLAVES");
+            Start();
+            Parea("CERRAR LLAVES");
+            DirectlyNamespace();
+        }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
+            Parea("DOBLE DIAGONAL");
+            Parea("CADENA");
+            DirectlyNamespace();
+        }else if(preAnalisis.tipo == "DIAGONAL ASTERISCO"){
+            Parea("DIAGONAL ASTERISCO");
+            Parea("CADENA");
+            Parea("ASTERISCO DIAGONAL");
+            DirectlyNamespace();
+        }else{            
+            console.log(">> Error sintactico no se esperaba [" + preAnalisis.tipo + "], corresponde a otro ambiente, en la fila  "+preAnalisis.fila  );            
+            agregarError(preAnalisis.tipo,  "No debía de aparecer aquí",preAnalisis.fila, preAnalisis.columna);
+            errorSintactico = true;
+            DirectlyNamespace();
+        }
+    }
+} 
 function Start(){
     if(preAnalisis!=null){
         if(preAnalisis.tipo == "PR INT"){
@@ -99,16 +128,12 @@ function Start(){
             Parea("CERRAR PARENTESIS");
             Parea("ABRIR LLAVES");
             Sentencias();
+            Parea("PR RETURN");
+            Parea("PUNTO COMA");
             Parea("CERRAR LLAVES");
             Start();
-        }else if(preAnalisis.tipo == "PR CLASS"){
-                Parea("PR CLASS");
-                Parea("ID");
-                Parea("ABRIR LLAVES");
-                Start();
-                Parea("CERRAR LLAVES");
-                Start();
-        }else if(preAnalisis.tipo == "PR CONSOLE"){
+        }//creo que no se puede declarar console.write fuera de métodos.
+        /*else if(preAnalisis.tipo == "PR CONSOLE"){
             Parea("PR CONSOLE");
             Parea("PUNTO");
             Parea("PR WRITE");
@@ -122,7 +147,8 @@ function Start(){
             Parea("CERRAR PARENTESIS"); 
             Parea("PUNTO COMA");
             Start();
-        }else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
+        }
+        */else if(preAnalisis.tipo == "DOBLE DIAGONAL"){
             Parea("DOBLE DIAGONAL");
             Parea("CADENA");
             Start();
@@ -132,10 +158,7 @@ function Start(){
             Parea("ASTERISCO DIAGONAL");
             Start();
         }else{            
-            console.log(">> Error sintactico no se esperaba [" + preAnalisis.tipo + "], corresponde a otro ambiente, en la fila  "+preAnalisis.fila  );            
-            agregarError(preAnalisis.tipo,  "No debía de aparecer aquí",preAnalisis.fila, preAnalisis.columna);
-            errorSintactico = true;
-            Start();
+           //Epsilon
         }
     }
 }
@@ -223,6 +246,7 @@ function Sentencias(){
             Sentencias();
         }else if(preAnalisis.tipo == "PR BREAK"){
             if(EnableBreakOrContinue>0){
+                BreakNeeded=false;
                 Parea("PR BREAK");
                 Parea("PUNTO COMA");
             }else{
@@ -402,7 +426,13 @@ function Declaracion_Case(){
     Parea("PR CASE");
     Expresion();
     Parea("DOS PUNTOS");
+    BreakNeeded=true;
     Sentencias();
+    if(BreakNeeded==true){        
+        console.log(">> Error sintactico se esperaba [ break ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+        errorSintactico = true;
+        agregarError(preAnalisis.tipo,  " break ",preAnalisis.fila, preAnalisis.columna);
+    }
     Declaracion_Case_P();
 }
 function Declaracion_Case_P(){
@@ -411,7 +441,13 @@ function Declaracion_Case_P(){
     }else if(preAnalisis.tipo == "PR DEFAULT"){
         Parea("PR DEFAULT");
         Parea("DOS PUNTOS");
-        Sentencias();
+        BreakNeeded=true;
+        Sentencias();  
+        if(BreakNeeded==true){        
+            console.log(">> Error sintactico se esperaba [ break ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
+            errorSintactico = true;
+            agregarError(preAnalisis.tipo,  " break ",preAnalisis.fila, preAnalisis.columna);
+        }
     }else{
         console.log(">> Error sintactico se esperaba [ case o default] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila);
         errorSintactico = true;
@@ -770,7 +806,7 @@ function Parea(tipoToken)
             indice++;
             if(indice==ListaTokens.length-1){
                 preAnalisis==null;
-                Consola1.value+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
+                ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
             }else{
                 preAnalisis = ListaTokens[indice];
             } 
@@ -809,24 +845,24 @@ function agregarError(obtenido, esperado, fila, columna)
             Error.fila = fila;
             Error.columna = columna;
             ListaErrores.push(Error);  
-            Consola1.value+="Se obtuvo: "+Error.obtenido;
+            ConsolaErrores+="Se obtuvo: "+Error.obtenido;
             if(esperado=="No debía de aparecer aquí")
             {
-                Consola1.value+=" No debía de aparecer aquí";
+                ConsolaErrores+=" No debía de aparecer aquí";
             }else{                 
-                Consola1.value+=" -Se buscaba: "+Error.esperado;
+                ConsolaErrores+=" -Se buscaba: "+Error.esperado;
             }
-            Consola1.value+=" -Fila: "+Error.fila;
-            Consola1.value+=+" -Columna: "+Error.columna;
-            Consola1.value+="\n\n"; 
+            ConsolaErrores+=" -Fila: "+Error.fila;
+            ConsolaErrores+=+" -Columna: "+Error.columna;
+            ConsolaErrores+="\n\n"; 
             if (indice < ListaTokens.length)
             {
                 while(true){
                     if(preAnalisis.tipo == "PUNTO COMA" || preAnalisis.tipo == "CERRAR LLAVES"){
                         indice++;
-                        if(indice>=ListaTokens.length-1){
-                            preAnalisis==null;
-                            Consola1.value+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
+                        if(indice>=ListaTokens.length){
+                            preAnalisis=null;
+                            ConsolaErrores+="-ERROR- No se puede seguir analizando, corrige los erroers señalados e intenta de nuevo."
                         }else{
                             preAnalisis = ListaTokens[indice];                            
                         } 
@@ -834,8 +870,8 @@ function agregarError(obtenido, esperado, fila, columna)
                         break;
                     }else{
                         indice++;
-                        if(indice==ListaTokens.length-1){
-                            preAnalisis==null;
+                        if(indice>=ListaTokens.length){
+                            preAnalisis=null;
                             break;
                         }else{
                             preAnalisis = ListaTokens[indice];                            

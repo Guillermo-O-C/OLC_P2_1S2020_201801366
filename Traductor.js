@@ -8,6 +8,10 @@ var ConsolaSalida="";
 var Tabulaciones =0;
 var CurrentLine=1;
 var temporalID="";
+var InsideCase=false;
+var ForHeader=false;
+var ForHeaderString="";
+var Printing =false;
 function BegginTranslating(Salida, textarea, textarea2){
     ConsolaSalida="";
     textarea.value="Realizando traducción..";
@@ -95,7 +99,10 @@ function Sentencias_T(){
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "ID"){
-            ConsolaSalida+=preAnalisis_T.lexema;
+            if(ForHeader){
+            }else{
+                ConsolaSalida+=preAnalisis_T.lexema;
+            }
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
                 ConsolaSalida+="(";
@@ -109,45 +116,68 @@ function Sentencias_T(){
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR VOID"){
-            ConsolaSalida+="def "+temporalID;
+            var mainMethod = false;
             Parea_T("PR VOID");
+            ConsolaSalida+="def "+preAnalisis_T.lexema;
             if(preAnalisis_T.tipo =="PR MAIN"){
                 Parea_T("PR MAIN");
+                mainMethod=true;
             }else{
                 Parea_T("ID");
             }
             Parea_T("ABRIR PARENTESIS");
             Parea_T("CERRAR PARENTESIS");
+            Tabulaciones++;
             Parea_T("ABRIR LLAVES");
             Sentencias_T();
-            Parea_T("CERRAR LLAVES");
+            ConsolaSalida+="return";           
+            Parea_T("PR RETURN");
+            Parea_T("PUNTO COMA");
+            Tabulaciones--;
+            Parea_T("CERRAR LLAVES"); 
+            if(mainMethod){
+                var tempTabs="";
+                for(var i =0;i<Tabulaciones;i++){
+                    tempTabs+="\t";
+                }
+                ConsolaSalida+="if__name__ = \"__main__\":\n"+tempTabs+"main()\n";
+                CurrentLine--;
+                mainMethod=false;
+            }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR CLASS"){
                 Parea_T("PR CLASS");
                 Parea_T("ID");
+                Tabulaciones++;
                 Parea_T("ABRIR LLAVES");
                 Sentencias_T();
+                Tabulaciones--;
                 Parea_T("CERRAR LLAVES");
                 Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR CONSOLE"){
             Parea_T("PR CONSOLE");
             Parea_T("PUNTO");
             Parea_T("PR WRITE");
+            ConsolaSalida+="print(";
+            Printing=true;
             Parea_T("ABRIR PARENTESIS");
             if(preAnalisis_T.tipo == "CADENA HTML"){
+                ConsolaSalida+=preAnalisis_T.lexema;
                 Parea_T("CADENA HTML");
                 Impresion_P_T();
             }else{
                 Expresion_T();
             }
+            Printing=false;
             Parea_T("CERRAR PARENTESIS"); 
+            ConsolaSalida+=")";
             Parea_T("PUNTO COMA");
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "DOBLE DIAGONAL"){
-            ConsolaSalida+="# ";
             Parea_T("DOBLE DIAGONAL");
-            ConsolaSalida+=preAnalisis_T.lexema;
-            Parea_T("CADENA");            
+            ConsolaSalida+="# "+preAnalisis_T.lexema;
+            Parea_T("CADENA");  
+            CurrentLine--;          
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "DIAGONAL ASTERISCO"){
             ConsolaSalida+="''' ";
@@ -175,6 +205,11 @@ function Sentencias_T(){
         }else if(preAnalisis_T.tipo == "PR BREAK"){
             if(EnableBreakOrContinue>0){
                 Parea_T("PR BREAK");
+                ConsolaSalida+="break ";
+                if(InsideCase){                
+                   Tabulaciones--;
+                   InsideCase=false;
+                }
                 Parea_T("PUNTO COMA");
             }else{
                 console.log(">> Error no se esperaba [ break ] en la fila  "+preAnalisis_T.fila);
@@ -184,6 +219,7 @@ function Sentencias_T(){
         }else if(preAnalisis_T.tipo == "PR CONTINUE"){
             if(EnableBreakOrContinue>0){
                 Parea_T("PR CONTINUE");
+                ConsolaSalida+="continue ";
                 Parea_T("PUNTO COMA");
             }else{
                 console.log(">> Error no se esperaba [ continue ] en la fila  "+preAnalisis_T.fila);
@@ -202,18 +238,34 @@ function Expresion_Relacional_T(){
 }
 function Expresion_Relacional_T_P(){
     if(preAnalisis_T.tipo =="MAS"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MAS");
         Termino_Relacional_T();
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="MENOS"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MENOS");
         Termino_Relacional_T();
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="ASTERISCO"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("ASTERISCO");
         Termino_Relacional_T();
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="DIAGONAL"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("DIAGONAL");
         Termino_Relacional_T();
         Expresion_Relacional_T_P();
@@ -227,26 +279,50 @@ function Termino_Relacional_T(){
 }
 function Termino_Relacional_T_P(){
     if(preAnalisis_T.tipo == "MENOR"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MENOR");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MAYOR"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MAYOR");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MENOR IGUAL"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MENOR IGUAL");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MAYOR IGUAL"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("MAYOR IGUAL");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "IGUAL IGUAL"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("IGUAL IGUAL");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "DISTINTO"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("DISTINTO");
         Factor_Relacional_T();
         Termino_Relacional_T_P();
@@ -256,21 +332,56 @@ function Termino_Relacional_T_P(){
 }
 function Factor_Relacional_T(){
     if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("ABRIR PARENTESIS");
         Expresion_Relacional_T();
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("CERRAR PARENTESIS");
     }else if(preAnalisis_T.tipo == "NUMERO"){
+        if(ForHeader){
+            ForHeaderString+=preAnalisis_T.lexema;
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("NUMERO");
     }else if(preAnalisis_T.tipo == "ID"){
+        if(ForHeader){
+          //  ForHeaderString+=preAnalisis_T.lexema;
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("ID");
         Llamada_Funcion_T();
     }else if(preAnalisis_T.tipo == "CADENA"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("CADENA");
     }else if(preAnalisis_T.tipo == "PR TRUE"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+="True ";
+        }
         Parea_T("PR TRUE");
     }else if(preAnalisis_T.tipo == "PR FALSE"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+="False ";
+        }
         Parea_T("PR FALSE");
     }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
+        if(ForHeader){
+            ForHeaderString+=preAnalisis_T.lexema;
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("NUMERO DECIMAL");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
@@ -280,39 +391,57 @@ function Factor_Relacional_T(){
 }
 function Declaracion_Do_While_T(){
     Parea_T("PR DO");
+    ConsolaSalida+="while True:";
     Parea_T("ABRIR LLAVES");
+    Tabulaciones++;
     EnableBreakOrContinue++;
     Sentencias_T();
     Parea_T("CERRAR LLAVES");
+    Tabulaciones--;
     EnableBreakOrContinue--;
     Parea_T("PR WHILE");
+    ConsolaSalida+="if ";
     Parea_T("ABRIR PARENTESIS");
     Condicional_If_T();
+    CurrentLine--;
     Parea_T("CERRAR PARENTESIS");
+    ConsolaSalida+="\t\tbreak";
     Parea_T("PUNTO COMA");
 }
 function Declaracion_While_T(){
     Parea_T("PR WHILE");
+    ConsolaSalida+="while "
     Parea_T("ABRIR PARENTESIS");
     Condicional_If_T();
     Parea_T("CERRAR PARENTESIS");
+    ConsolaSalida+=":";
     Parea_T("ABRIR LLAVES");
+    Tabulaciones++;
     EnableBreakOrContinue++;
     Sentencias_T();
     Parea_T("CERRAR LLAVES");
+    Tabulaciones--;
     EnableBreakOrContinue--;
 }
 function Declaracion_For_T(){
     Parea_T("PR FOR");
     Parea_T("ABRIR PARENTESIS");
+    ForHeader=true;
+    ForHeaderString="for ";
     Initializaer_For_T();
+    ForHeaderString+=", ";
     Expresion_Relacional_T();
+    ForHeaderString+="):"
+    ConsolaSalida+=ForHeaderString;
     Parea_T("PUNTO COMA");
     Sentencias_T();
+    ForHeader=false;
     Parea_T("CERRAR PARENTESIS");
+    Tabulaciones++;
     Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
     Sentencias_T();
+    Tabulaciones--;
     Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue--;
 }
@@ -341,20 +470,27 @@ function Operador_INC_DEC_T(){
 }
 function Declaracion_Swith_T(){
     Parea_T("PR SWITCH");
-    Parea_T("ABRIR PARENTESIS");
+    Parea_T("ABRIR PARENTESIS");    
+    ConsolaSalida+="def switch(case, "+preAnalisis_T.lexema+"):";
     Parea_T("ID");
     Parea_T("CERRAR PARENTESIS");
+    Tabulaciones++;
     Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
     Declaracion_Case_T();
+    Tabulaciones--;
     Parea_T("CERRAR LLAVES");
-    EnableBreakOrContinue++;
+    EnableBreakOrContinue--;
 }
 function Declaracion_Case_T(){
     Parea_T("PR CASE");
     Expresion_T();
+    Tabulaciones++;
+    ConsolaSalida+=": ";
     Parea_T("DOS PUNTOS");
+    InsideCase=true;
     Sentencias_T();
+   // ConsolaSalida+=",";// es necesario el \n ?
     Declaracion_Case_T_P();
 }
 function Declaracion_Case_T_P(){
@@ -363,6 +499,9 @@ function Declaracion_Case_T_P(){
     }else if(preAnalisis_T.tipo == "PR DEFAULT"){
         Parea_T("PR DEFAULT");
         Parea_T("DOS PUNTOS");
+        Tabulaciones++;
+        ConsolaSalida+="default: ";
+        InsideCase=true;
         Sentencias_T();
     }else{
         console.log(">> Error sintactico se esperaba [ case o default] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
@@ -372,17 +511,23 @@ function Declaracion_Case_T_P(){
 }
 function Declaracion_If_T(){
     Parea_T("PR IF");
-    Parea_T("ABRIR PARENTESIS");    
+    Parea_T("ABRIR PARENTESIS");
+    ConsolaSalida+="if ";    
     Condicional_If_T();
     Parea_T("CERRAR PARENTESIS");
+    Tabulaciones++;
+    CurrentLine--;
     Parea_T("ABRIR LLAVES");
     Sentencias_T();
+    Tabulaciones--;
+    CurrentLine--;
     Parea_T("CERRAR LLAVES");
     Declaracion_If_P_T();
 }
 function Declaracion_If_P_T(){
     if(preAnalisis_T.tipo == "PR ELSE"){
         Parea_T("PR ELSE");
+        ConsolaSalida+="el";
         Declaracion_Else_T();
     }else{
         //Epsilon
@@ -390,8 +535,12 @@ function Declaracion_If_P_T(){
 }
 function Declaracion_Else_T(){
     if(preAnalisis_T.tipo == "ABRIR LLAVES"){
+        ConsolaSalida+="se:";
+        Tabulaciones++;
+        CurrentLine--;
         Parea_T("ABRIR LLAVES");
         Sentencias_T();
+        Tabulaciones--;
         Parea_T("CERRAR LLAVES");
     }else if(preAnalisis_T.tipo == "PR IF"){
         Declaracion_If_T();
@@ -461,8 +610,10 @@ function Operador_Logico_T(){
 }
 function Signo_Operador_Logico_T(){
     if(preAnalisis_T.tipo == "AND"){
+        ConsolaSalida+="and ";
         Parea_T("AND");
     }else if(preAnalisis_T.tipo == "OR"){
+        ConsolaSalida+="or ";
         Parea_T("OR");
     }else{
         console.log(">> Error sintactico se esperaba [ operador lógico ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
@@ -472,6 +623,7 @@ function Signo_Operador_Logico_T(){
 }
 function Operador_Not_T(){
     if(preAnalisis_T.tipo == "NOT"){
+        ConsolaSalida+="not";
         Parea_T("NOT");
     }else{
         //Epsilon
@@ -480,6 +632,7 @@ function Operador_Not_T(){
 function Impresion_P_T(){
     if(preAnalisis_T.tipo == "MAS"){
         Parea_T("MAS");
+        ConsolaSalida+=", "+preAnalisis_T.lexema;
         Parea_T("CADENA HTML");
         Impresion_P_T();
     }else{
@@ -499,10 +652,16 @@ function Declaracion_Asignacion_P_T(){
         ConsolaSalida+=";";
         Parea_T("PUNTO COMA");
     }else if(preAnalisis_T.tipo == "IGUAL"){
-        ConsolaSalida+=" = ";
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=" = ";
+        }
         Parea_T("IGUAL");
         Expresion_T();
-        ConsolaSalida+=";";
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=";";
+        }
         Parea_T("PUNTO COMA");
     }else{
         console.log(">> Error sintactico se esperaba [ = o ; ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
@@ -512,10 +671,12 @@ function Declaracion_Asignacion_P_T(){
 }
 function Asignacion_T(){
     if(preAnalisis_T.tipo=="IGUAL"){
-        ConsolaSalida+=" = ";
+        if(ForHeader){
+        }else{
+          ConsolaSalida+=" = ";
+        }
         Parea_T("IGUAL");
         Expresion_T();
-        ConsolaSalida+=";";
         Parea_T("PUNTO COMA");
     }else{
         console.log(">> Error sintactico se esperaba [ = ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
@@ -545,10 +706,11 @@ function Declaracion_Funcion_T(){
     Parea_T("ABRIR LLAVES");
     Sentencias_T();
     Parea_T("PR RETURN");
+    ConsolaSalida+="return ";
     Condicional_If_T();
     Parea_T("PUNTO COMA");
-    Parea_T("CERRAR LLAVES");
     Tabulaciones--;
+    Parea_T("CERRAR LLAVES");
 }
 function Expresion_T(){
     Termino_T();
@@ -556,12 +718,22 @@ function Expresion_T(){
 }
 function Expresion_P_T(){
     if(preAnalisis_T.tipo =="MAS"){
-        ConsolaSalida+="+";
+        if(ForHeader){
+            ForHeaderString+="+";
+        }else if(Printing){
+            ConsolaSalida+=", ";
+        }else{
+            ConsolaSalida+="+"+" ";
+        }
         Parea_T("MAS");
         Termino_T();
         Expresion_P_T();
     }else if(preAnalisis_T.tipo =="MENOS"){
-        ConsolaSalida+="-";
+        if(ForHeader){
+            ForHeaderString+="+";
+        }else{
+            ConsolaSalida+="-"+" ";
+        }
         Parea_T("MENOS");
         Termino_T();
         Expresion_P_T();
@@ -575,12 +747,20 @@ function Termino_T(){
 }
 function Termino_P_T(){
     if(preAnalisis_T.tipo =="ASTERISCO"){
-        ConsolaSalida+="*";
+        if(ForHeader){
+            ForHeaderString+="+";
+        }else{
+            ConsolaSalida+="*"+" ";
+        }
         Parea_T("ASTERISCO");
         Factor_T();
         Termino_P_T();
     }else if(preAnalisis_T.tipo =="DIAGONAL"){
-        ConsolaSalida+="/";
+        if(ForHeader){
+            ForHeaderString+="+";
+        }else{
+            ConsolaSalida+="/"+" ";
+        }
         Parea_T("DIAGONAL");
         Factor_T();
         Termino_P_T();
@@ -590,16 +770,28 @@ function Termino_P_T(){
 }
 function Factor_T(){
     if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
-        ConsolaSalida+="(";
+        if(ForHeader){
+            ForHeaderString+="+";
+        }else{
+            ConsolaSalida+="(";
+        }
         Parea_T("ABRIR PARENTESIS");
         Expresion_T();
         ConsolaSalida+=")";
         Parea_T("CERRAR PARENTESIS");
     }else if(preAnalisis_T.tipo == "NUMERO"){
-        ConsolaSalida+=preAnalisis_T.lexema;
+        if(ForHeader){
+            ForHeaderString+=preAnalisis_T.lexema;
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("NUMERO");
     }else if(preAnalisis_T.tipo == "ID"){
+    if(ForHeader){
+        ForHeaderString+=preAnalisis_T.lexema;
+    }else{
         ConsolaSalida+=preAnalisis_T.lexema;
+    }
         Parea_T("ID");
         Llamada_Funcion_T();
     }else if(preAnalisis_T.tipo == "CADENA"){
@@ -612,7 +804,11 @@ function Factor_T(){
         ConsolaSalida+="False";
         Parea_T("PR FALSE");
     }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
-        ConsolaSalida+=preAnalisis_T.lexema;
+        if(ForHeader){
+            ForHeaderString+=preAnalisis_T.lexema;
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
         Parea_T("NUMERO DECIMAL");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
@@ -623,15 +819,16 @@ function Factor_T(){
 function Llamada_Funcion_T(){
     if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){
         Parea_T("ABRIR PARENTESIS");
+        ConsolaSalida+="(";
         Argumentos_T();
         Parea_T("CERRAR PARENTESIS");
+        ConsolaSalida+=")";
     }else{
         //Epsilon
     }
 }
 function Argumentos_T(){
     if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "NUMERO"){
@@ -639,7 +836,6 @@ function Argumentos_T(){
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "ID"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "CADENA"){
@@ -709,30 +905,37 @@ function Tipo_Dato_T(){
 function Initializaer_For_T(){
     if(preAnalisis_T.tipo == "PR INT"){
         Parea_T("PR INT");
+        ForHeaderString+=preAnalisis_T.lexema+" in range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
     }else if(preAnalisis_T.tipo == "PR DOUBLE"){
         Parea_T("PR DOUBLE");
+        ForHeaderString+=preAnalisis_T.lexema+" in a range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
-    }else if(preAnalisis_T.tipo == "PR STRING"){
+    }
+    /*else if(preAnalisis_T.tipo == "PR STRING"){
         Parea_T("PR STRING");
+        ForHeaderString+=preAnalisis_T.lexema+" in a range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
     }else if(preAnalisis_T.tipo == "PR BOOL"){
         Parea_T("PR BOOL");
+        ForHeaderString+=preAnalisis_T.lexema+" in a range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
     }else if(preAnalisis_T.tipo == "PR CHAR"){
         Parea_T("PR CHAR");
+        ForHeaderString+=preAnalisis_T.lexema+" in a range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
-    }else if(preAnalisis_T.tipo == "ID"){
+    }*/
+    else if(preAnalisis_T.tipo == "ID"){
         Parea_T("ID");
         if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
             Llamada_Metodo_T();
@@ -825,8 +1028,8 @@ function agregarError_T(obtenido, esperado, fila, columna)
                         break;
                     }else{
                         indice++;
-                        if(indice==ListaTokens.length-1){
-                            preAnalisis_T==null;
+                        if(indice>=ListaTokens.length-1){
+                            preAnalisis_T=null;
                             break;
                         }else{
                             preAnalisis_T = ListaTokens[indice];                            

@@ -63,7 +63,7 @@ function AnalizadorLexico(entrada){
     Errores = new Array();
     entrada = entrada + "#";
     fila = 1;
-    columna = 0;
+    columna = 1;
     estado = 0;
     auxlex = "";
     caracter=false;
@@ -220,7 +220,7 @@ function AnalizadorLexico(entrada){
                 else if (c.localeCompare('\n') == 0)
                 {
                     fila ++;
-                    columna = 0;
+                    columna = 1;
                     columnaToken = columna;
                 }
                 else if (c.localeCompare('\'') == 0)
@@ -307,7 +307,12 @@ function AnalizadorLexico(entrada){
                     agregarToken("CADENA");
                 }
                 else
-                {
+                {                    
+                    if(c.localeCompare('\n')==0){
+                        fila++;
+                        columna = 1;
+                        columnaToken = columna;
+                    }
                     estado = 3;
                     auxlex += c;
                 }
@@ -423,12 +428,15 @@ function AnalizadorLexico(entrada){
                 break;
             case 12:
                 if (c.localeCompare('\n') == 0)
-                {
+                {   fila++;
+                    columna = 0;
+                    columnaToken = columna;
                     auxlex += c;
                     agregarToken("CADENA");
                 }
                 else
                 {
+                    
                     estado = 12;
                     auxlex += c;
                 }
@@ -443,6 +451,11 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    if(c.localeCompare('\n')==0){
+                        fila++;
+                        columna = 1;
+                        columnaToken = columna;
+                    }
                     estado = 13;
                     auxlex += c;
                 }
