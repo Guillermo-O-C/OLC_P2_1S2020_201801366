@@ -20,13 +20,8 @@ function EnviarEntrada(text, textarea, textarea2){
     AnalizadorLexico(text);
     console.log(Salida);
     console.log(Errores);
-    if(Errores.length>0){  
-        textarea.value = "Se ha terminado el análisis léxico y se encontraron los siguientes errores:\n\n";      
-        textarea.value += PrintErrores();
-    }else{
-      //  textarea.value = PrintTokens();
-        SetUp(Salida, textarea, textarea2);
-    }
+    //  textarea.value = PrintTokens();
+    SetUp(Salida, textarea, textarea2);
 }
 function PrintTokens(){
     var text ="";
@@ -55,6 +50,9 @@ function PrintErrores(){
       text+=error.fila+", ";
       text+=error.columna;
       text+="\n\n";
+   }
+   if(i>0){
+       text="Erores Léxicos:\n"+text;
    }
     return text;
 }

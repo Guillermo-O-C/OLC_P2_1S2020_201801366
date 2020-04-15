@@ -3,8 +3,11 @@ var indice;
 var preAnalisis_T;
 var errorSintactico;
 var EnableBreakOrContinue;
+var EnableReturn;
+var InsideFunction;
 var ConsolaErrores = "";
 var ConsolaSalida="";
+var ConsolaHTML="";
 var Tabulaciones =0;
 var CurrentLine=1;
 var temporalID="";
@@ -14,20 +17,24 @@ var ForHeaderString="";
 var Printing =false;
 function BegginTranslating(Salida, textarea, textarea2){
     ConsolaSalida="";
+    ConsolaHTML="";
     textarea.value="Realizando traducción..";
     ListaTokens = Salida;
     ListaErrores= new Array();
     indice = 0;
+    EnableReturn=0;
     EnableBreakOrContinue=0;
+    InsideFunction=false;
     preAnalisis_T = ListaTokens[indice];
     errorSintactico = false;
     console.log(ListaTokens);
     Sentencias_T();
     console.log(ListaErrores);
     if(ListaErrores.length>0){
-        textarea.value = ImprimirErrores();
+      //  textarea.value = ImprimirErrores();
     }else{
         textarea.value = ConsolaSalida;
+        textarea2.value = ConsolaHTML;
         //Traducir
     }
 }
@@ -128,11 +135,10 @@ function Sentencias_T(){
             Parea_T("ABRIR PARENTESIS");
             Parea_T("CERRAR PARENTESIS");
             Tabulaciones++;
+            EnableReturn++;
             Parea_T("ABRIR LLAVES");
             Sentencias_T();
-            ConsolaSalida+="return";           
-            Parea_T("PR RETURN");
-            Parea_T("PUNTO COMA");
+            EnableReturn--;
             Tabulaciones--;
             Parea_T("CERRAR LLAVES"); 
             if(mainMethod){
@@ -147,6 +153,7 @@ function Sentencias_T(){
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR CLASS"){
                 Parea_T("PR CLASS");
+                ConsolaSalida+="class "+preAnalisis_T.lexema+":";
                 Parea_T("ID");
                 Tabulaciones++;
                 Parea_T("ABRIR LLAVES");
@@ -163,6 +170,7 @@ function Sentencias_T(){
             Parea_T("ABRIR PARENTESIS");
             if(preAnalisis_T.tipo == "CADENA HTML"){
                 ConsolaSalida+=preAnalisis_T.lexema;
+                ConsolaHTML+=preAnalisis_T.lexema.substring(1, preAnalisis_T.lexema.length-1);
                 Parea_T("CADENA HTML");
                 Impresion_P_T();
             }else{
@@ -226,6 +234,20 @@ function Sentencias_T(){
                 errorSintactico = true;
                 agregarError_T(preAnalisis_T.tipo,  " no está en ciclo de repetición ",preAnalisis_T.fila, preAnalisis_T.columna);
             }
+        }else if(preAnalisis_T.tipo == "PR RETURN"){
+            if(EnableReturn>0){
+                ConsolaSalida+="return ";
+                Parea_T("PR RETURN");
+                if(InsideFunction){   
+                    Condicional_If_T();
+                    InsideFunction=false;
+                }
+                Parea_T("PUNTO COMA"); 
+            }else{
+                console.log(">> Error no se esperaba [ return ] en la fila  "+preAnalisis.fila);
+                errorSintactico = true;
+                agregarError_T(preAnalisis.tipo,  " no está en un método o función ",preAnalisis.fila, preAnalisis.columna);
+            }              
         }else{            
             //Epsilon
          //   ConsolaErrores+="El análisi sintáctico ha finalizado";
@@ -704,12 +726,16 @@ function Declaracion_Funcion_T(){
     ConsolaSalida+=":";
     Tabulaciones++;
     Parea_T("ABRIR LLAVES");
+    EnableReturn++;
+    InsideFunction=true;
     Sentencias_T();
-    Parea_T("PR RETURN");
-    ConsolaSalida+="return ";
-    Condicional_If_T();
-    Parea_T("PUNTO COMA");
+    if(InsideFunction){        
+        console.log(">> Error sintactico se esperaba [ return ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
+        errorSintactico = true;
+        agregarError(preAnalisis.tipo,  " return ",preAnalisis.fila, preAnalisis.columna);
+    }
     Tabulaciones--;
+    EnableReturn--;
     Parea_T("CERRAR LLAVES");
 }
 function Expresion_T(){
@@ -1039,7 +1065,7 @@ function agregarError_T(obtenido, esperado, fila, columna)
                 }
             }      
 }
-function ImprimirErrores(){
+function ImprimirErrores_T(){
     var text ="";
     var i =0;
    for(let Error of ListaErrores){

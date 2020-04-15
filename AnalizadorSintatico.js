@@ -3,7 +3,7 @@ var ListaErrores = new Array();
 var indice;
 var preAnalisis;
 var errorSintactico;
-var EnableBreakOrContinue;
+var EnableBreakOrContinue, EnableReturn, InsideFunction;
 var Consola1;
 var BreakNeeded;
 function SetUp(Salida, textarea, textarea2){
@@ -13,15 +13,15 @@ function SetUp(Salida, textarea, textarea2){
     ListaErrores= new Array();
     indice = 0;
     EnableBreakOrContinue=0;
+    EnableReturn=0;
     preAnalisis = ListaTokens[indice];
     errorSintactico = false;
     BreakNeeded=false;
     console.log(ListaTokens);
     DirectlyNamespace();
     console.log(ListaErrores);    
-    if(ListaErrores.length>0){
-        textarea.value = "Se ha terminado el análisis sintáctico y se encontraron los siguientes errores:\n\n";
-        textarea.value += ImprimirErrores();
+    if(ListaErrores.length>0 || Errores.length>0){
+        textarea.value += PrintErrores()+ImprimirErrores();
     }else{
         //Traducir
         BegginTranslating(Salida, textarea, textarea2);
@@ -127,9 +127,9 @@ function Start(){
             Parea("ABRIR PARENTESIS");
             Parea("CERRAR PARENTESIS");
             Parea("ABRIR LLAVES");
+            EnableReturn++;
             Sentencias();
-            Parea("PR RETURN");
-            Parea("PUNTO COMA");
+            EnableReturn--;
             Parea("CERRAR LLAVES");
             Start();
         }//creo que no se puede declarar console.write fuera de métodos.
@@ -257,12 +257,25 @@ function Sentencias(){
         }else if(preAnalisis.tipo == "PR CONTINUE"){
             if(EnableBreakOrContinue>0){
                 Parea("PR CONTINUE");
-                Parea("PUNTO COMA");
+                Parea("PUNTO COMA");                
             }else{
                 console.log(">> Error no se esperaba [ continue ] en la fila  "+preAnalisis.fila);
                 errorSintactico = true;
                 agregarError(preAnalisis.tipo,  " no está en ciclo de repetición ",preAnalisis.fila, preAnalisis.columna);
             }
+        }else if(preAnalisis.tipo == "PR RETURN"){
+            if(EnableReturn>0){
+                Parea("PR RETURN");
+                if(InsideFunction){   
+                    Condicional_If();
+                    InsideFunction=false;
+                }
+                Parea("PUNTO COMA"); 
+            }else{
+                console.log(">> Error no se esperaba [ return ] en la fila  "+preAnalisis.fila);
+                errorSintactico = true;
+                agregarError(preAnalisis.tipo,  " no está en un método o función ",preAnalisis.fila, preAnalisis.columna);
+            }              
         }else{            
             //Epsilon
         }
@@ -614,10 +627,15 @@ function Declaracion_Funcion(){
     Parametros();
     Parea("CERRAR PARENTESIS");
     Parea("ABRIR LLAVES");
+    EnableReturn++;
+    InsideFunction=true;
     Sentencias();
-    Parea("PR RETURN");
-    Condicional_If();
-    Parea("PUNTO COMA");
+    if(InsideFunction){        
+        console.log(">> Error sintactico se esperaba [ return ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
+        errorSintactico = true;
+        agregarError(preAnalisis.tipo,  " return ",preAnalisis.fila, preAnalisis.columna);
+    }
+    EnableReturn--;
     Parea("CERRAR LLAVES");
 }
 function ACCIONES_CLASE(){
@@ -885,6 +903,9 @@ function ImprimirErrores(){
     var text ="";
     var i =0;
    for(let Error of ListaErrores){
+       if(i==0){
+           text+="Errores Sintácticos:\n";
+       }
        i++;
       text+=i+".Se obtuvo: ";
       text+=Error.obtenido+" -Se buscaba: ";
