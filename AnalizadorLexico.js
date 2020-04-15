@@ -426,11 +426,12 @@ function AnalizadorLexico(entrada){
                 break;
             case 12:
                 if (c.localeCompare('\n') == 0)
-                {   fila++;
-                    columna = 0;
-                    columnaToken = columna;
+                { 
                     auxlex += c;
                     agregarToken("CADENA");
+                    fila++;
+                    columna = 0;
+                    columnaToken = columna;
                 }
                 else
                 {

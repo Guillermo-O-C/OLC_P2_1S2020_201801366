@@ -357,6 +357,8 @@ function Factor_Relacional(){
         Parea("PR FALSE");
     }else if(preAnalisis.tipo == "NUMERO DECIMAL"){
         Parea("NUMERO DECIMAL");
+    }else if(preAnalisis.tipo == "CARACTER"){
+        Parea("CARACTER");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
         agregarError(preAnalisis.tipo,  "FACTOR",preAnalisis.fila, preAnalisis.columna);
@@ -693,6 +695,8 @@ function Factor(){
         Parea("PR FALSE");
     }else if(preAnalisis.tipo == "NUMERO DECIMAL"){
         Parea("NUMERO DECIMAL");
+    }else if(preAnalisis.tipo == "CARACTER"){
+        Parea("CARACTER");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis.tipo + "] en la fila  "+preAnalisis.fila  );
         agregarError(preAnalisis.tipo,  "FACTOR",preAnalisis.fila, preAnalisis.columna);

@@ -100,17 +100,18 @@ function Sentencias_T(){
                 ConsolaSalida+="def "+temporalID;
                 Declaracion_Funcion_T();
             }else{//Declaración de variables
-                ConsolaSalida+=addTabs()+"var "+temporalID;
+                ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "ID"){
+            var thisID = preAnalisis_T.lexema;            
+            Parea_T("ID");
             if(ForHeader){
             }else{
-                ConsolaSalida+=preAnalisis_T.lexema;
+                ConsolaSalida+=thisID;
             }
-            Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Llamada a método o función
                 ConsolaSalida+="(";
                 Llamada_Metodo_T();
@@ -193,6 +194,7 @@ function Sentencias_T(){
             ConsolaSalida+=preAnalisis_T.lexema;
             Parea_T("CADENA");
             ConsolaSalida+="'''";
+            CurrentLine--;
             Parea_T("ASTERISCO DIAGONAL");
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR IF"){
@@ -405,6 +407,12 @@ function Factor_Relacional_T(){
             ConsolaSalida+=preAnalisis_T.lexema;
         }
         Parea_T("NUMERO DECIMAL");
+    }else if(preAnalisis_T.tipo == "CARACTER"){
+        if(ForHeader){
+        }else{
+            ConsolaSalida+=preAnalisis_T.lexema;
+        }
+        Parea_T("CARACTER");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
         agregarError_T(preAnalisis_T.tipo,  "FACTOR",preAnalisis_T.fila, preAnalisis_T.columna);
@@ -836,6 +844,9 @@ function Factor_T(){
             ConsolaSalida+=preAnalisis_T.lexema;
         }
         Parea_T("NUMERO DECIMAL");
+    }else if(preAnalisis_T.tipo == "CARACTER"){
+        ConsolaSalida+=preAnalisis_T.lexema;
+        Parea_T("CARACTER");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
         agregarError_T(preAnalisis_T.tipo,  "FACTOR",preAnalisis_T.fila, preAnalisis_T.columna);
@@ -1079,7 +1090,7 @@ function ImprimirErrores_T(){
    }
     return text;
 }
-function addTabs(traducido){
+function addTabs(){
     var tabs = "";
     for(var i=0;i<Tabulaciones;i++){
         tabs+="\t";
