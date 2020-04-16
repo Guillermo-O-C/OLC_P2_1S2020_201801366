@@ -9,6 +9,7 @@
         <script type="text/javascript" src="AnalizadorLexico.js"></script>
         <script type="text/javascript" src="AnalizadorSintatico.js"></script>
         <script type="text/javascript" src="Traductor.js"></script>
+        <script type="text/javascript" src="JsonParser.js"></script>
         <script>     
             function myFunction() {
                 var x = document.getElementById('FileLoader');
@@ -40,7 +41,7 @@
                $('#btn-add-tab').click(function() {
                    tabID++;
                    $('#tab-list').append($('<li><a href="#tab' + tabID + '" role="tab" data-toggle="tab" type="button" class="btn btn-info" style="margin-right: 1px;"><span>Tab ' + tabID + '</span> <span class="glyphicon glyphicon-pencil text-muted edit"></span> <button class="close" type="button" title="Remove this page">×</button></a></li>'));
-                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2);">Analizar Entrada</button></div>'));
+                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2, consola3);">Analizar Entrada</button></div>'));
                    $(".edit").click(editHandler);
                });
                
@@ -154,7 +155,7 @@
                         <div class="tab-pane fade in active" id="tab1">
                             <div id="left">
                                 <textarea id="entrada"  class="entrada"></textarea>
-                                <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2);">Analizar Entrada</button>
+                                <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2, consola3);">Analizar Entrada</button>
                             </div>
                             </div> 
                             <div id="right">
@@ -172,7 +173,7 @@
                                         <textarea id="consola2" class="consola2" disabled></textarea>
                                     </div>
                                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                        <textarea id="consola3" class="consola2" disabled></textarea>
+                                        <textarea id="consola3" class="consola3" disabled></textarea>
                                     </div>
                                   </div>
                             </div>                       

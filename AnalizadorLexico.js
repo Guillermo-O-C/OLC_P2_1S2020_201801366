@@ -14,14 +14,16 @@ var globalVariable={
 function test(){    
     alert('Hello World! - guapo');
 }
-function EnviarEntrada(text, textarea, textarea2){
+function EnviarEntrada(text, textarea, textarea2, textarea3){
     
    // alert('Hello World!'+text); 
     AnalizadorLexico(text);
     console.log(Salida);
     console.log(Errores);
+    textarea2.value ="";
+    textarea3.value="";
     //  textarea.value = PrintTokens();
-    SetUp(Salida, textarea, textarea2);
+    SetUp(Salida, textarea, textarea2, textarea3);
 }
 function PrintTokens(){
     var text ="";

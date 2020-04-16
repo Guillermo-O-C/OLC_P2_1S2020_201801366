@@ -15,7 +15,7 @@ var InsideCase=false;
 var ForHeader=false;
 var ForHeaderString="";
 var Printing =false;
-function BegginTranslating(Salida, textarea, textarea2){
+function BegginTranslating(Salida, textarea, textarea2, textarea3){
     ConsolaSalida="";
     ConsolaHTML="";
     textarea.value="Realizando traducción..";
@@ -35,6 +35,7 @@ function BegginTranslating(Salida, textarea, textarea2){
     }else{
         textarea.value = ConsolaSalida;
         textarea2.value = ConsolaHTML;
+        TraduccionJsonHTML(ConsolaHTML, textarea3);
         //Traducir
     }
 }
