@@ -41,7 +41,7 @@
                $('#btn-add-tab').click(function() {
                    tabID++;
                    $('#tab-list').append($('<li><a href="#tab' + tabID + '" role="tab" data-toggle="tab" type="button" class="btn btn-info" style="margin-right: 1px;"><span>Tab ' + tabID + '</span> <span class="glyphicon glyphicon-pencil text-muted edit"></span> <button class="close" type="button" title="Remove this page">×</button></a></li>'));
-                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2, consola3);">Analizar Entrada</button></div>'));
+                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2, consola3, variables);">Analizar Entrada</button></div>'));
                    $(".edit").click(editHandler);
                });
                
@@ -125,8 +125,13 @@
                       );  */
                         if(tabID==1){
                             document.getElementById('entrada').value=contents;
+                            var els = document.querySelectorAll("a[href='#tab1']");
+                            console.log("obtenido\n"+els);
+                            els[0].textContent = f.name;
                         }else{
                             document.getElementById('entrada'+tabID).value=contents;
+                            var els = document.querySelectorAll("a[href='#tab"+tabID+"']");
+                            els[0].textContent = f.name;
                         }
                     }
                     r.readAsText(f);
@@ -155,7 +160,7 @@
                         <div class="tab-pane fade in active" id="tab1">
                             <div id="left">
                                 <textarea id="entrada"  class="entrada"></textarea>
-                                <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2, consola3);">Analizar Entrada</button>
+                                <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2, consola3, variables);">Analizar Entrada</button>
                             </div>
                             </div> 
                             <div id="right">
@@ -181,9 +186,18 @@
                 </div>
             </div>
                             <div id="leftdown">
-                                <table algin=center border="1" id="variables" style="margin-left: 10%; text-align: center;" width=80%>
-                                    <tr><td>Nombre</td><td>Tipo</td><td>Línea</td></tr>
-                                </table>
+                              <table cellspacing="0" cellpadding="0" border="0" style="background-color:#27496d; height: 100%; width: 100%;"> 
+                                <tr>
+                                  <td> 
+                                    <div style="width:80%; height:100%; overflow:auto; 
+                                    background-color:#27496d;margin-left: 10%;">
+                                  <table algin=center border="1" id="variables" style="text-align: center; height: 100%;"width=100% >
+                                      <tr><td>Nombre</td><td>Tipo</td><td>Línea</td></tr>
+                                  </table>
+                                  </div>
+                                  </td>
+                                </tr>                                
+                              </table>
                             </div>  
         </div>
     </body>

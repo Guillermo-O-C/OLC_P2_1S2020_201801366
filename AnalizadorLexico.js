@@ -14,7 +14,7 @@ var globalVariable={
 function test(){    
     alert('Hello World! - guapo');
 }
-function EnviarEntrada(text, textarea, textarea2, textarea3){
+function EnviarEntrada(text, textarea, textarea2, textarea3, variables){
     
    // alert('Hello World!'+text); 
     AnalizadorLexico(text);
@@ -22,8 +22,9 @@ function EnviarEntrada(text, textarea, textarea2, textarea3){
     console.log(Errores);
     textarea2.value ="";
     textarea3.value="";
+    variables.innerHTML="<tr><td>Nombre</td><td>Tipo</td><td>Línea</td></tr>";
     //  textarea.value = PrintTokens();
-    SetUp(Salida, textarea, textarea2, textarea3);
+    SetUp(Salida, textarea, textarea2, textarea3, variables);
 }
 function PrintTokens(){
     var text ="";
@@ -443,7 +444,6 @@ function AnalizadorLexico(entrada){
                 }
                 break;
             case 13:
-         //        if (c.localeCompare('*') == 0 && postC.localeCompare('/') == 0)
                 if (c.localeCompare('*') == 0 && entrada.charAt(i+1).localeCompare('/')==0)
                 {
                     agregarToken("CADENA");
@@ -487,6 +487,11 @@ function AnalizadorLexico(entrada){
                 }
                 else
                 {
+                    if(c.localeCompare('\n')==0){
+                        fila++;
+                        columna = 1;
+                        columnaToken = columna;
+                    }
                     auxlex += c;
                     estado=15;
                 }

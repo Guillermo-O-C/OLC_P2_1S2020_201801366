@@ -6,7 +6,7 @@ var errorSintactico;
 var EnableBreakOrContinue, EnableReturn, InsideFunction;
 var Consola1;
 var BreakNeeded;
-function SetUp(Salida, textarea, textarea2, textarea3){
+function SetUp(Salida, textarea, textarea2, textarea3, variables){
     textarea.value="";
     ListaTokens = Salida;
     Consola1 = textarea;
@@ -24,7 +24,7 @@ function SetUp(Salida, textarea, textarea2, textarea3){
         textarea.value += PrintErrores()+ImprimirErrores();
     }else{
         //Traducir
-        BegginTranslating(Salida, textarea, textarea2, textarea3);
+        BegginTranslating(Salida, textarea, textarea2, textarea3,variables);
     }
 }
 function DirectlyNamespace(){    

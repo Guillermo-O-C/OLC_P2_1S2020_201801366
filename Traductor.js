@@ -15,12 +15,22 @@ var InsideCase=false;
 var ForHeader=false;
 var ForHeaderString="";
 var Printing =false;
-function BegginTranslating(Salida, textarea, textarea2, textarea3){
+var VariableType;
+var VariableNames;
+var VariableValue;
+var VariableAsign;
+var VariableTable;
+function BegginTranslating(Salida, textarea, textarea2, textarea3, variables){
     ConsolaSalida="";
     ConsolaHTML="";
     textarea.value="Realizando traducción..";
     ListaTokens = Salida;
     ListaErrores= new Array();
+    VariableType= "";
+    VariableNames= new Array();
+    VariableAsign=false;
+    VariableValue="";
+    VariableTable =  variables;
     indice = 0;
     EnableReturn=0;
     EnableBreakOrContinue=0;
@@ -42,8 +52,13 @@ function BegginTranslating(Salida, textarea, textarea2, textarea3){
 function Sentencias_T(){
     if(preAnalisis_T!=null){
         if(preAnalisis_T.tipo == "PR INT"){
+            var fila = preAnalisis_T.fila;
+            VariableType="int";
             Parea_T("PR INT");
+            VariableAsign=false;
             temporalID=preAnalisis_T.lexema;
+            VariableNames = new Array();
+            VariableNames.push(preAnalisis_T.lexema);
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 ConsolaSalida+="def "+temporalID;
@@ -52,11 +67,17 @@ function Sentencias_T(){
                 ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
+                insertRows(fila);
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR DOUBLE"){
+            var fila = preAnalisis_T.fila;
+            VariableType="double";
             Parea_T("PR DOUBLE");
+            VariableAsign=false;
             temporalID=preAnalisis_T.lexema;
+            VariableNames = new Array();
+            VariableNames.push(preAnalisis_T.lexema);
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 ConsolaSalida+="def "+temporalID;
@@ -65,11 +86,17 @@ function Sentencias_T(){
                 ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
+                insertRows(fila);
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR STRING"){
+            var fila = preAnalisis_T.fila;
+            VariableType="string";
             Parea_T("PR STRING");
+            VariableAsign=false;
             temporalID=preAnalisis_T.lexema;
+            VariableNames = new Array();
+            VariableNames.push(preAnalisis_T.lexema);
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 ConsolaSalida+="def "+temporalID;
@@ -78,11 +105,17 @@ function Sentencias_T(){
                 ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
+                insertRows(fila);
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR BOOL"){
+            var fila = preAnalisis_T.fila;
+            VariableType="bool";
             Parea_T("PR BOOL");
+            VariableAsign=false;
             temporalID=preAnalisis_T.lexema;
+            VariableNames = new Array();
+            VariableNames.push(preAnalisis_T.lexema);
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 ConsolaSalida+="def "+temporalID;
@@ -91,11 +124,17 @@ function Sentencias_T(){
                 ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
+                insertRows(fila);
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "PR CHAR"){
+            var fila = preAnalisis_T.fila;
+            VariableType="char";
             Parea_T("PR CHAR");
+            VariableAsign=false;
             temporalID=preAnalisis_T.lexema;
+            VariableNames = new Array();
+            VariableNames.push(preAnalisis_T.lexema);
             Parea_T("ID");
             if(preAnalisis_T.tipo == "ABRIR PARENTESIS"){//Declaración de un función
                 ConsolaSalida+="def "+temporalID;
@@ -104,6 +143,7 @@ function Sentencias_T(){
                 ConsolaSalida+="var "+temporalID;
                 Lista_ID_P_T();
                 Declaracion_Asignacion_P_T();
+                insertRows(fila);
             }
             Sentencias_T();
         }else if(preAnalisis_T.tipo == "ID"){
@@ -683,6 +723,7 @@ function Declaracion_Asignacion_P_T(){
         ConsolaSalida+=";";
         Parea_T("PUNTO COMA");
     }else if(preAnalisis_T.tipo == "IGUAL"){
+        VariableAsign=true;
         if(ForHeader){
         }else{
             ConsolaSalida+=" = ";
@@ -720,6 +761,7 @@ function Lista_ID_P_T(){
         ConsolaSalida+=", ";
         Parea_T("COMA");
         ConsolaSalida+=preAnalisis_T.lexema;
+        VariableNames.push(preAnalisis_T.lexema);
         Parea_T("ID");
         Lista_ID_P_T()
     }else{
@@ -759,6 +801,7 @@ function Expresion_P_T(){
             ConsolaSalida+=", ";
         }else{
             ConsolaSalida+="+"+" ";
+            VariableValue+="+ ";
         }
         Parea_T("MAS");
         Termino_T();
@@ -768,6 +811,7 @@ function Expresion_P_T(){
             ForHeaderString+="+";
         }else{
             ConsolaSalida+="-"+" ";
+            VariableValue+="- ";
         }
         Parea_T("MENOS");
         Termino_T();
@@ -786,6 +830,7 @@ function Termino_P_T(){
             ForHeaderString+="+";
         }else{
             ConsolaSalida+="*"+" ";
+            VariableValue+="* ";
         }
         Parea_T("ASTERISCO");
         Factor_T();
@@ -795,6 +840,7 @@ function Termino_P_T(){
             ForHeaderString+="+";
         }else{
             ConsolaSalida+="/"+" ";
+            VariableValue+="/ ";
         }
         Parea_T("DIAGONAL");
         Factor_T();
@@ -809,16 +855,19 @@ function Factor_T(){
             ForHeaderString+="+";
         }else{
             ConsolaSalida+="(";
+            VariableValue+="(";
         }
         Parea_T("ABRIR PARENTESIS");
         Expresion_T();
         ConsolaSalida+=")";
+        VariableValue+=")";
         Parea_T("CERRAR PARENTESIS");
     }else if(preAnalisis_T.tipo == "NUMERO"){
         if(ForHeader){
             ForHeaderString+=preAnalisis_T.lexema;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
+            VariableValue+=preAnalisis_T.lexema;
         }
         Parea_T("NUMERO");
     }else if(preAnalisis_T.tipo == "ID"){
@@ -826,27 +875,33 @@ function Factor_T(){
         ForHeaderString+=preAnalisis_T.lexema;
     }else{
         ConsolaSalida+=preAnalisis_T.lexema;
+        VariableValue+=preAnalisis_T.lexema;
     }
         Parea_T("ID");
         Llamada_Funcion_T();
     }else if(preAnalisis_T.tipo == "CADENA"){
         ConsolaSalida+=preAnalisis_T.lexema;
+        VariableValue+=preAnalisis_T.lexema;
         Parea_T("CADENA");
     }else if(preAnalisis_T.tipo == "PR TRUE"){
         ConsolaSalida+="True";
+        VariableValue+=preAnalisis_T.lexema;
         Parea_T("PR TRUE");
     }else if(preAnalisis_T.tipo == "PR FALSE"){
         ConsolaSalida+="False";
+        VariableValue+=preAnalisis_T.lexema;
         Parea_T("PR FALSE");
     }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
         if(ForHeader){
             ForHeaderString+=preAnalisis_T.lexema;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
+            VariableValue+=preAnalisis_T.lexema;
         }
         Parea_T("NUMERO DECIMAL");
     }else if(preAnalisis_T.tipo == "CARACTER"){
         ConsolaSalida+=preAnalisis_T.lexema;
+        VariableValue+=preAnalisis_T.lexema;
         Parea_T("CARACTER");
     }else{        
         console.log(">> Error sintactico se esperaba [ un factor ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila  );
@@ -1097,4 +1152,15 @@ function addTabs(){
         tabs+="\t";
     }
     ConsolaSalida+=tabs;
+}
+function insertRows(fila){
+    for(let Variable of VariableNames){
+        var row =  VariableTable.insertRow(VariableTable.rows.length);
+        var celda1 = row.insertCell(0);
+        var celda2 = row.insertCell(1);
+        var celda3 = row.insertCell(2);
+        celda1.innerHTML = Variable;
+        celda2.innerHTML = VariableType;
+        celda3.innerHTML = fila;
+    }
 }

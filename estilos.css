@@ -6,13 +6,13 @@
 }
 #leftdown{
     width:50%;
-    height: 30%;
+    height: 28%;
     background-color:#27496d;
     float: right;
 }
 #right{
     width: 50%;
-    height: 90%;
+    height: 88%;
     background-color:#27496d;
     float: right;
 }
@@ -42,8 +42,6 @@
 
   width: 100%;
   height: 44.5%;
-  margin-bottom: 3%;
-  margin-top: 0%;
   font-size: small;
 }
 .boton{
@@ -80,6 +78,7 @@ header{
 }
 table{
     background-color: #ffd868;
+    height: 100%;
     font-family: consolas;
 }
 nav{

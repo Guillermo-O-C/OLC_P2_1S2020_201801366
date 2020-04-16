@@ -126,7 +126,9 @@ function Etiquetas(Tag, Father){
     }else if(Tag =="#text"){   
         console.log(Father);
         Jsontabs++;
-        ConsolaJson+=AddTabulation()+"\"TEXT\":\""+Father.data+"\"";
+        if(Father.data!="\n"){
+            ConsolaJson+=AddTabulation()+"\"TEXT\":\""+Father.data+"\"";
+        }
         Jsontabs--;
     }
 }
