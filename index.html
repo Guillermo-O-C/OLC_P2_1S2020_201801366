@@ -70,10 +70,28 @@
            
            $(".edit").click(editHandler);
            </script>
+           <script>     
+           function printPython(){
+             var a = document.getElementById("downloadFile");
+             var newFile = new File([consola1.value], "SalidaPython.py");
+             var direccion = window.URL.createObjectURL(newFile);
+             a.href = direccion;
+             a.download = "SalidaPython.py";
+             a.click();
+           } 
+           function printHTML(){
+             var a = document.getElementById("downloadFile");
+             var newFile = new File([consola2.value], "SalidaHTML.html");
+             var direccion = window.URL.createObjectURL(newFile);
+             a.href = direccion;
+             a.download = "SalidaHTML.html";
+             a.click();
+           } 
+            </script> 
     </head>
     <body>
         <nav class="navbar navbar-expand-lg">
-            <a class="navbar-brand" href="#">Traducto PY</a>
+            <a class="navbar-brand" href="#">Traductor PY</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -89,6 +107,8 @@
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#" id="btn-add-tab">Nuevo Documento en blanco</a>
                     <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Abrir Documento</a>
+                    <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Guardar</a>
+                    <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Guardar Como</a>
                   </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -99,9 +119,9 @@
                           </svg>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="#" onclick="printPython()">Salida Python</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Something else here</a>
+                      <a class="dropdown-item" href="#" onclick="printHTML()">Salida HTML</a>
                     </div>
                   </li>
               </ul>
@@ -200,5 +220,6 @@
                               </table>
                             </div>  
         </div>
+        <a id="downloadFile" style="display: none;"></a> 
     </body>
 </html>
