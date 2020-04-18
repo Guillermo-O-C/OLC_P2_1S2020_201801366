@@ -72,20 +72,20 @@
            </script>
            <script>     
            function printPython(){
-             var a = document.getElementById("downloadFile");
+             var DownloadLink = document.getElementById("downloadFile");
              var newFile = new File([consola1.value], "SalidaPython.py");
              var direccion = window.URL.createObjectURL(newFile);
-             a.href = direccion;
-             a.download = "SalidaPython.py";
-             a.click();
+             DownloadLink.href = direccion;
+             DownloadLink.download = "SalidaPython.py";
+             DownloadLink.click();
            } 
            function printHTML(){
-             var a = document.getElementById("downloadFile");
+             var DownloadLink = document.getElementById("downloadFile");
              var newFile = new File([consola2.value], "SalidaHTML.html");
              var direccion = window.URL.createObjectURL(newFile);
-             a.href = direccion;
-             a.download = "SalidaHTML.html";
-             a.click();
+             DownloadLink.href = direccion;
+             DownloadLink.download = "SalidaHTML.html";
+             DownloadLink.click();
            } 
             </script> 
     </head>
@@ -157,7 +157,7 @@
                     r.readAsText(f);
                     myFunction();
                   } else { 
-                    alert("Failed to load file");
+                    alert("No se pudo cargar el archivo, inténtalo de nuevo.");
                   }
                 }
               

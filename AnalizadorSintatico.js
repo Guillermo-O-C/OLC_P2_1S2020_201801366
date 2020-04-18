@@ -22,6 +22,7 @@ function SetUp(Salida, textarea, textarea2, textarea3, variables){
     console.log(ListaErrores);    
     if(ListaErrores.length>0 || Errores.length>0){
         textarea.value += PrintErrores()+ImprimirErrores();
+        SaveErrorFile();
     }else{
         //Traducir
         BegginTranslating(Salida, textarea, textarea2, textarea3,variables);
@@ -919,4 +920,48 @@ function ImprimirErrores(){
       text+="\n\n";
    }
     return text;
+}
+function SaveErrorFile(){
+    var ArchivoSalida = document.createElement("html");
+    var Cuerpo = "<html>\n";
+    Cuerpo+="<head>\n";
+    Cuerpo+="<meta charset = \"utf -8\">\n";
+    Cuerpo+="<title> Tabla de Erroes</title>\n";
+    Cuerpo+="</head>\n";
+    Cuerpo+="<body bgcolor=#000>\n";
+    Cuerpo+="<table align = \"center\" style = \"width:80% ; font-family: consolas; \">\n";
+    Cuerpo+="<tr bgcolor = \"4C868A\" ><td colspan = 5 align = \"center\" ><h3> Tabla de Errores</h3></td></tr>\n";
+    Cuerpo+=UnirErrores();
+    Cuerpo+="</table>\n";
+    Cuerpo+="</body>\n";
+    Cuerpo+="</html>\n";
+    ArchivoSalida.innerHTML = Cuerpo;    
+    var DownloadLink = document.getElementById("downloadFile");
+    var newFile = new File([Cuerpo], "ERRORES.html");
+    var direccion = window.URL.createObjectURL(newFile);
+    DownloadLink.href = direccion;
+    DownloadLink.download = "ERRORES.html";
+    DownloadLink.click();
+}
+function UnirErrores(){
+    var text ="";
+    var i =0;
+    if(Errores.length>0){
+        text+="<tr bgcolor = \"4C868A\" ><td colspan = 5 align = \"center\" ><h4> Errores Léxicos</h4></td></tr>\n";
+        text+="<tr bgcolor = \"4DD0C2\" style = \"width: 10%; text-align:center; \"><td style = \"width: 10%; text-align:center; \">#</td><td style = \"width: 10%; text-align:center; \">Fila</td><td style = \"width: 10%; text-align:center; \">Columna</td><td style = \"width: 30% \">Caracter</td><td style =\"width: 40% \">Descripción</td></tr>\n";
+    }
+    for(let error of Errores){
+        i++;
+        text+="<tr bgcolor = \"C0E8E0\"><td style = \"width: 10%; text-align:center; \">" + i + "</td><td style = \"width: 10%; text-align:center; \">" + error.fila + "</td><td style = \"width: 10%; text-align:center; \">" + error.columna + "</td><td style = \"width: 30% \">" + error.valor + "</td><td style =\"width: 40% \">" + error.descripcion + "</td></tr>\n";
+    }    
+    if(ListaErrores.length>0){
+        text+="<tr bgcolor = \"4C868A\" ><td colspan = 5 align = \"center\" ><h4> Errores Sintácticos</h4></td></tr>\n";
+        text+="<tr bgcolor = \"4DD0C2\" style = \"width: 10%; text-align:center; \"><td style = \"width: 10%; text-align:center; \">#</td><td style = \"width: 10%; text-align:center; \">Fila</td><td style = \"width: 10%; text-align:center; \">Columna</td><td style = \"width: 30% \">Obtenido</td><td style =\"width: 40% \">Esperado/Descripción</td></tr>\n";
+       
+    }
+    for(let Error of ListaErrores){        
+        i++;
+        text+="<tr bgcolor = \"C0E8E0\"><td style = \"width: 10%; text-align:center; \">" + i + "</td><td style = \"width: 10%; text-align:center; \">" + Error.fila + "</td><td style = \"width: 10%; text-align:center; \">" + Error.columna + "</td><td style = \"width: 30% \">" + Error.obtenido + "</td><td style =\"width: 40% \">" + Error.esperado + "</td></tr>\n";
+    }
+    return text;   
 }

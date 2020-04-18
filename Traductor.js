@@ -20,6 +20,7 @@ var VariableNames;
 var VariableValue;
 var VariableAsign;
 var VariableTable;
+var ForTop;
 function BegginTranslating(Salida, textarea, textarea2, textarea3, variables){
     ConsolaSalida="";
     ConsolaHTML="";
@@ -29,6 +30,7 @@ function BegginTranslating(Salida, textarea, textarea2, textarea3, variables){
     VariableType= "";
     VariableNames= new Array();
     VariableAsign=false;
+    ForTop=false;
     VariableValue="";
     VariableTable =  variables;
     indice = 0;
@@ -304,6 +306,9 @@ function Expresion_Relacional_T(){
 function Expresion_Relacional_T_P(){
     if(preAnalisis_T.tipo =="MAS"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+="+";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -312,6 +317,9 @@ function Expresion_Relacional_T_P(){
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="MENOS"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+="-";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -320,6 +328,9 @@ function Expresion_Relacional_T_P(){
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="ASTERISCO"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+="*";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -328,6 +339,9 @@ function Expresion_Relacional_T_P(){
         Expresion_Relacional_T_P();
     }else if(preAnalisis_T.tipo =="DIAGONAL"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+="/";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -345,6 +359,7 @@ function Termino_Relacional_T(){
 function Termino_Relacional_T_P(){
     if(preAnalisis_T.tipo == "MENOR"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -353,6 +368,7 @@ function Termino_Relacional_T_P(){
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MAYOR"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -361,6 +377,7 @@ function Termino_Relacional_T_P(){
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MENOR IGUAL"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -369,6 +386,7 @@ function Termino_Relacional_T_P(){
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "MAYOR IGUAL"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -377,6 +395,7 @@ function Termino_Relacional_T_P(){
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "IGUAL IGUAL"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -385,6 +404,7 @@ function Termino_Relacional_T_P(){
         Termino_Relacional_T_P();
     }else if(preAnalisis_T.tipo == "DISTINTO"){
         if(ForHeader){
+            ForTop=true;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -398,25 +418,36 @@ function Termino_Relacional_T_P(){
 function Factor_Relacional_T(){
     if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+="(";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
         Parea_T("ABRIR PARENTESIS");
         Expresion_Relacional_T();
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+=")";
+            }
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
         Parea_T("CERRAR PARENTESIS");
     }else if(preAnalisis_T.tipo == "NUMERO"){
         if(ForHeader){
-            ForHeaderString+=preAnalisis_T.lexema;
+            if(ForTop){
+                ForHeaderString+=preAnalisis_T.lexema;;
+            }            
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
         Parea_T("NUMERO");
     }else if(preAnalisis_T.tipo == "ID"){
         if(ForHeader){
+            if(ForTop){
+                ForHeaderString+=preAnalisis_T.lexema;;
+            } 
           //  ForHeaderString+=preAnalisis_T.lexema;
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
@@ -443,7 +474,9 @@ function Factor_Relacional_T(){
         Parea_T("PR FALSE");
     }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
         if(ForHeader){
-            ForHeaderString+=preAnalisis_T.lexema;
+            if(ForTop){
+                ForHeaderString+=preAnalisis_T.lexema;;
+            } 
         }else{
             ConsolaSalida+=preAnalisis_T.lexema;
         }
@@ -498,6 +531,7 @@ function Declaracion_For_T(){
     Parea_T("PR FOR");
     Parea_T("ABRIR PARENTESIS");
     ForHeader=true;
+    ForTop=false;
     ForHeaderString="for ";
     Initializaer_For_T();
     ForHeaderString+=", ";
@@ -808,7 +842,7 @@ function Expresion_P_T(){
         Expresion_P_T();
     }else if(preAnalisis_T.tipo =="MENOS"){
         if(ForHeader){
-            ForHeaderString+="+";
+            ForHeaderString+="-";
         }else{
             ConsolaSalida+="-"+" ";
             VariableValue+="- ";
@@ -827,7 +861,7 @@ function Termino_T(){
 function Termino_P_T(){
     if(preAnalisis_T.tipo =="ASTERISCO"){
         if(ForHeader){
-            ForHeaderString+="+";
+            ForHeaderString+="*";
         }else{
             ConsolaSalida+="*"+" ";
             VariableValue+="* ";
@@ -837,7 +871,7 @@ function Termino_P_T(){
         Termino_P_T();
     }else if(preAnalisis_T.tipo =="DIAGONAL"){
         if(ForHeader){
-            ForHeaderString+="+";
+            ForHeaderString+="/";
         }else{
             ConsolaSalida+="/"+" ";
             VariableValue+="/ ";
@@ -852,15 +886,19 @@ function Termino_P_T(){
 function Factor_T(){
     if(preAnalisis_T.tipo =="ABRIR PARENTESIS"){
         if(ForHeader){
-            ForHeaderString+="+";
+            ForHeaderString+="(";
         }else{
             ConsolaSalida+="(";
             VariableValue+="(";
         }
         Parea_T("ABRIR PARENTESIS");
         Expresion_T();
-        ConsolaSalida+=")";
-        VariableValue+=")";
+        if(ForHeader){
+            ForHeaderString+=")";
+        }else{
+            ConsolaSalida+=")";
+            VariableValue+=")";
+        }  
         Parea_T("CERRAR PARENTESIS");
     }else if(preAnalisis_T.tipo == "NUMERO"){
         if(ForHeader){
