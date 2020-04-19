@@ -963,26 +963,21 @@ function Argumentos_T(){
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "NUMERO"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "ID"){
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "CADENA"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "PR TRUE"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "PR FALSE"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else if(preAnalisis_T.tipo == "NUMERO DECIMAL"){
-        ConsolaSalida+=preAnalisis_T.lexema;
         Expresion_T();
         Argumentos_T_P();
     }else{
@@ -992,6 +987,7 @@ function Argumentos_T(){
 function Argumentos_T_P(){
     if(preAnalisis_T.tipo == "COMA"){
         Parea_T("COMA");
+        ConsolaSalida+=", ";
         Argumentos_T();
     }else{
         //Epsilon
