@@ -715,10 +715,10 @@ function Operador_Logico_T(){
 }
 function Signo_Operador_Logico_T(){
     if(preAnalisis_T.tipo == "AND"){
-        ConsolaSalida+="and ";
+        ConsolaSalida+=" and ";
         Parea_T("AND");
     }else if(preAnalisis_T.tipo == "OR"){
-        ConsolaSalida+="or ";
+        ConsolaSalida+=" or ";
         Parea_T("OR");
     }else{
         console.log(">> Error sintactico se esperaba [ operador lógico ] en lugar de [" + preAnalisis_T.tipo + "] en la fila  "+preAnalisis_T.fila);
@@ -999,8 +999,13 @@ function Argumentos_T_P(){
 }
 function Parametros_T(){
     if(preAnalisis_T.tipo != "CERRAR PARENTESIS"){
+        VariableType = preAnalisis_T.lexema;
         Tipo_Dato_T();
+        VariableAsign=false;
         ConsolaSalida+=preAnalisis_T.lexema;
+        VariableNames=new Array();
+        VariableNames.push(preAnalisis_T.lexema);
+        insertRows(preAnalisis_T.fila);
         Parea_T("ID");
         Parametros_P_T();
     }else{
@@ -1036,12 +1041,22 @@ function Tipo_Dato_T(){
 function Initializaer_For_T(){
     if(preAnalisis_T.tipo == "PR INT"){
         Parea_T("PR INT");
+        VariableType = "int";
+        VariableAsign=false;
+        VariableNames=new Array();
+        VariableNames.push(preAnalisis_T.lexema);
+        insertRows(preAnalisis_T.fila);
         ForHeaderString+=preAnalisis_T.lexema+" in range(";
         Parea_T("ID");
         Lista_ID_P_T();
         Declaracion_Asignacion_P_T();
     }else if(preAnalisis_T.tipo == "PR DOUBLE"){
-        Parea_T("PR DOUBLE");
+        Parea_T("PR DOUBLE");        
+        VariableType = "double";
+        VariableAsign=false;
+        VariableNames=new Array();
+        VariableNames.push(preAnalisis_T.lexema);
+        insertRows(preAnalisis_T.fila);
         ForHeaderString+=preAnalisis_T.lexema+" in a range(";
         Parea_T("ID");
         Lista_ID_P_T();

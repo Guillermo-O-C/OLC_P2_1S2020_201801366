@@ -41,7 +41,7 @@
                $('#btn-add-tab').click(function() {
                    tabID++;
                    $('#tab-list').append($('<li><a href="#tab' + tabID + '" role="tab" data-toggle="tab" type="button" class="btn btn-info" style="margin-right: 1px;"><span>Tab ' + tabID + '</span> <span class="glyphicon glyphicon-pencil text-muted edit"></span> <button class="close" type="button" title="Remove this page">×</button></a></li>'));
-                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0);"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2, consola3, variables);">Analizar Entrada</button></div>'));
+                   $('#tab-content').append($('<div class="tab-pane fade" id="tab' + tabID + '"><div id="left"><textarea style="background: url(http://i.imgur.com/2cOaJ.png);background-color: #f1f1f1;background-attachment: local;background-repeat: no-repeat;padding-left: 35px;padding-top: 10px;border-color:#ccc;color: rgb(0, 0, 0); font-size: smaller;"id="entrada' + tabID + '" class="entrada"></textarea><button class="boton" onclick="EnviarEntrada(entrada' + tabID + '.value, consola1, consola2, consola3, variables);">Analizar Entrada</button></div>'));
                    $(".edit").click(editHandler);
                });
                
@@ -87,6 +87,26 @@
              DownloadLink.download = "SalidaHTML.html";
              DownloadLink.click();
            } 
+           function SaveFile(){
+             var NewDocumentName = prompt("Ingresa el nombre del nuevo documento");
+             if(NewDocumentName=="" || NewDocumentName==null){
+               alert("No se ha guardado el archivo.");
+             }else{
+                  var DownloadLink = document.getElementById("downloadFile");
+                  if(tabID==1){
+                    var TextFile =  document.getElementById("entrada");
+                    var newFile = new File([TextFile.value], NewDocumentName+".cs");
+                  }else{
+                    var TextFile =  document.getElementById("entrada"+tabID);
+                    var newFile = new File([TextFile.value], NewDocumentName+".cs");
+                  }
+                  var direccion = window.URL.createObjectURL(newFile);
+                  DownloadLink.href = direccion;
+                  DownloadLink.download = NewDocumentName+".cs";
+                  DownloadLink.click();
+             }
+             
+           } 
             </script> 
     </head>
     <body>
@@ -107,8 +127,8 @@
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#" id="btn-add-tab">Nuevo Documento en blanco</a>
                     <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Abrir Documento</a>
-                    <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Guardar</a>
-                    <a class="dropdown-item" href="#" id="UploadFile" onclick="myFunction()">Guardar Como</a>
+                    <a class="dropdown-item" href="#" id="UploadFile" onclick="SaveFile()">Guardar</a>
+                    <a class="dropdown-item" href="#" id="UploadFile" onclick="SaveFile()">Guardar Como</a>
                   </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -179,7 +199,7 @@
                     <div id="tab-content" class="tab-content" width=100%>
                         <div class="tab-pane fade in active" id="tab1">
                             <div id="left">
-                                <textarea id="entrada"  class="entrada"></textarea>
+                                <textarea id="entrada" class="entrada"></textarea>
                                 <button class="boton" onclick="EnviarEntrada(entrada.value, consola1, consola2, consola3, variables);">Analizar Entrada</button>
                             </div>
                             </div> 
