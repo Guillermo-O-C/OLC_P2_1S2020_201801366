@@ -496,12 +496,12 @@ function Factor_Relacional_T(){
 function Declaracion_Do_While_T(){
     Parea_T("PR DO");
     ConsolaSalida+="while True:";
-    Parea_T("ABRIR LLAVES");
     Tabulaciones++;
+    Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
     Sentencias_T();
-    Parea_T("CERRAR LLAVES");
     Tabulaciones--;
+    Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue--;
     Parea_T("PR WHILE");
     ConsolaSalida+="if ";
@@ -519,12 +519,12 @@ function Declaracion_While_T(){
     Condicional_If_T();
     Parea_T("CERRAR PARENTESIS");
     ConsolaSalida+=":";
-    Parea_T("ABRIR LLAVES");
     Tabulaciones++;
+    Parea_T("ABRIR LLAVES");
     EnableBreakOrContinue++;
     Sentencias_T();
-    Parea_T("CERRAR LLAVES");
     Tabulaciones--;
+    Parea_T("CERRAR LLAVES");
     EnableBreakOrContinue--;
 }
 function Declaracion_For_T(){
